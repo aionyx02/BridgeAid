@@ -28,8 +28,13 @@ owner: project
 | LLM API | 意圖辨識、欄位抽取、白話/多語轉寫 | runtime | yes | adapter 化，可換供應商 |
 | Redis + Celery/RQ | 提醒、來源檢查排程 | infra | yes | MVP 簡化版 |
 | jsonschema | 服務規則 schema 驗證（TASK.002） | runtime | yes | draft 2020-12；規則為不可信輸入需驗證 |
+| fastapi | 後端 API（TASK.003） | runtime | yes | 含 pydantic/starlette |
+| uvicorn[standard] | ASGI server（本地常駐） | runtime | yes | `uvicorn app.main:app` |
+| psycopg[binary] | PostgreSQL 存取 | runtime | yes | v3；僅設定 DATABASE_URL 時連線 |
+| keyring | 從 OS keychain 讀憑證 | runtime | yes | Windows→Credential Manager；env fallback |
 | pytest | 應用層測試 | dev | yes | 由 uv 管理 |
 | ruff | lint / format | dev | yes | 由 uv 管理 |
+| httpx | FastAPI TestClient | dev | yes | 測試用 |
 | 文件治理 guard（Node） | docs/context 治理 | dev | no | 隨模板提供，不進應用 runtime |
 
 ## Rejected / Deferred Dependencies

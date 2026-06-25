@@ -31,21 +31,24 @@ owner: project
 
 ### TASK.003 - 後端 API 與資料庫骨架
 
-- Status: todo
+- Status: review
 - Priority: P1
 - Owner: shawn
 - Started: 2026-06-25
 - Related docs:
   - `docs/architecture.md`
   - `docs/dependencies.md`
+  - `docs/adr/0003-backend-skeleton-persistence-secrets-and-api-surface.md`
 - Acceptance criteria:
-  - [ ] FastAPI 專案骨架與 PostgreSQL schema（services/rules/documents/sources）。
-  - [ ] 服務匯入工具能把 JSON 規則匯入 DB。
+  - [x] FastAPI 專案骨架與 PostgreSQL schema（`db/schema.sql` 九張表）。
+  - [~] 服務匯入工具（`app.importer`）：轉換已測；待真實 DB 實跑驗證。
+  - [x] LINE webhook 簽章驗證 + 憑證走 OS keychain（env fallback）。
 - Validation:
-  - [ ] `ruff check .`
-  - [ ] `pytest`
+  - [x] `uv run ruff check .`
+  - [x] `uv run pytest`（32 passed）
 - Notes:
   - 依工程優先序：先安全/個資邊界，再效能，再解耦。
+  - 卡點：ADR-0003 待 maintainer 接受；伺服器/DB 位置未定，骨架在無 DB/無 secret 時仍可啟動（degraded）。
 
 ## Strategy
 

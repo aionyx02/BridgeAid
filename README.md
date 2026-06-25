@@ -73,11 +73,35 @@ npm run docs:ready     # 嚴格驗收（lint + secret scan + test + refresh + pl
 npm run team:status    # 確認本機 identity
 ```
 
-應用層（Python 3.14，待程式碼落地後）：
+應用層（Python 3.14，uv 管理）：
 
 ```bash
-ruff check .
-pytest
+uv sync                 # 安裝依賴並以 editable 方式安裝 app 套件
+uv run ruff check .
+uv run pytest
+uv run uvicorn app.main:app --reload   # 本地後端常駐
+```
+
+啟動後：`GET /healthz`、`POST /recommend`、`POST /line/webhook`。無 DB / 無憑證時仍可啟動（`/recommend` 可用）。
+
+### 憑證設定（OS keychain）
+
+LINE / DB 憑證存入 OS keychain（Windows Credential Manager），不進版控。互動輸入、值不經命令列參數：
+
+```bash
+uv run keyring set bridgeaid LINE_CHANNEL_ID            # console 基本憑證
+uv run keyring set bridgeaid LINE_CHANNEL_SECRET        # 驗 webhook 簽章
+uv run keyring set bridgeaid LINE_CHANNEL_ACCESS_TOKEN  # 另行核發，reply/push 用
+uv run keyring set bridgeaid DATABASE_URL               # 之後架好資料庫再設
+```
+
+CI/容器可改用同名環境變數（或 `BRIDGEAID_` 前綴）作為 fallback。
+
+### 資料庫（伺服器位置之後決定）
+
+```bash
+psql "$DATABASE_URL" -f db/schema.sql   # 建立 schema
+uv run python -m app.importer           # 匯入 data/services/*.json
 ```
 
 ## 工程原則（規劃優先順序）

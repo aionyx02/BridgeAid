@@ -42,6 +42,15 @@ owner: project
 - 提供刪除資料、取消提醒、重新同意機制。
 - Demo 階段使用假資料與示範服務，不處理真實個案個資。
 
+## 憑證與後端安全（TASK.003 / ADR-0003）
+
+- LINE 與 DB 憑證來源：**OS keychain 為主**（`keyring`，服務名 `bridgeaid`，鍵 `LINE_CHANNEL_ID`、`LINE_CHANNEL_SECRET`、`LINE_CHANNEL_ACCESS_TOKEN`、`DATABASE_URL`），環境變數為 fallback（CI/容器）。
+- LINE 憑證對應：channel id + channel secret 為 console 基本憑證（secret 用於驗 webhook 簽章）；channel access token 另行核發，僅 reply/push API 需要。
+- 設定方式（互動輸入，值不經 shell 參數、不入版控/日誌）：`uv run keyring set bridgeaid <key>`（例：`LINE_CHANNEL_SECRET`）。
+- LINE webhook 先以 stdlib HMAC-SHA256 驗證 `X-Line-Signature` 才處理；未設定 secret 回 503，簽章錯誤回 401。
+- Degraded mode：無 secret / 無 DB 時後端仍可啟動（`/recommend` 可用），不崩潰、不洩漏設定細節。
+- 憑證只在記憶體使用，不寫入 repo、log、error message。
+
 ## Data Classification
 
 | Data | Sensitivity | Handling |

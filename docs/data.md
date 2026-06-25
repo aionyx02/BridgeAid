@@ -33,13 +33,16 @@ owner: project
 | `recommendation_results` | 推薦紀錄 | session_id, result_jsonb, created_at |
 | `reminder_tasks` | 提醒任務 | session_id, reminder_type, scheduled_at, channel, status |
 
-## API Contracts（初版，將隨 TASK.003 細化）
+## API Contracts（FastAPI，TASK.003 已實作骨架）
 
-| Endpoint / Function | Input | Output | Error shape |
+| Endpoint / Function | Input | Output | Error |
 |---|---|---|---|
-| `POST /chat` | session_id, message | intent, missing_fields, follow_up | `{code, message}` |
-| `POST /recommend` | extracted_profile | services[] (status, hit_rules, missing, documents, sources) | `{code, message}` |
-| `rule_engine.evaluate()` | profile, rule_jsonb | possible / insufficient_data / unlikely + hit conditions | raises ValidationError |
+| `GET /healthz` | — | `{status, rules_loaded, line_configured, db_configured}` | — |
+| `POST /recommend` | `{profile: {...}}` | `{results: [{service_id, service_name, status, hit_conditions, missing_fields, documents, needs_review, source}]}` | 422 (驗證) |
+| `POST /line/webhook` | raw body + `X-Line-Signature` | `{status: "ok"}` | 401（簽章錯）/ 503（未設定 secret） |
+| `rule_engine.evaluate_all()` | rules, profile | `Evaluation[]`（possible/insufficient_data/unlikely） | — |
+
+`/recommend` 不需資料庫即可運作（規則於啟動載入）。`status` 取值見「評估輸出」。
 
 ## 規則格式與規則引擎（TASK.002）
 

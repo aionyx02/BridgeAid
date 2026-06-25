@@ -16,3 +16,4 @@ owner: project
 | `0000` | template | ADR-0000: Decision Title |
 | `0001` | proposed | ADR-0001: HTML And UI Documentation Boundary |
 | `0002` | accepted | ADR-0002: BridgeAid initial architecture and AI boundary |
+| `0003` | proposed | ADR-0003: Backend skeleton: persistence, secrets, and API surface |
