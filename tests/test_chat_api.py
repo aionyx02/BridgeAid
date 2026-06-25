@@ -36,3 +36,4 @@ def test_conversation_converges_to_result_over_http():
     assert reply["kind"] == "result"
     assert reply["results"]
     assert any(r["status"] == "possible" for r in reply["results"])
+    assert reply["document_checklist"]  # merged checklist included (TASK.005)

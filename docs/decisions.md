@@ -17,3 +17,4 @@ owner: project
 | `0001` | proposed | ADR-0001: HTML And UI Documentation Boundary |
 | `0002` | accepted | ADR-0002: BridgeAid initial architecture and AI boundary |
 | `0003` | accepted | ADR-0003: Backend skeleton: persistence, secrets, and API surface |
+| `0004` | proposed | ADR-0004: LLM intent parser via local Ollama |

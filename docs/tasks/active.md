@@ -51,6 +51,25 @@ owner: project
   - Session 為 in-memory store；DB 持久化（`user_sessions`）為後續。
   - 待真實 LINE 連線驗證 reply/push（需 channel access token + 公開 webhook URL）。
 
+### TASK.005 - 文件 checklist 彙整與衝突檢查整合（Week 5）
+
+- Status: done
+- Priority: P0
+- Owner: shawn
+- Started: 2026-06-25
+- Related docs:
+  - `docs/data.md`
+  - `docs/ui.md`
+- Acceptance criteria:
+  - [x] 推薦結果彙整跨服務文件 checklist（去重，標示哪些服務需要）。
+  - [x] 多個 possible 服務間做衝突檢查並回傳（choose_one/exclusive）。
+  - [x] `/recommend` 與 `/chat` 結果都含 `conflicts` 與 `document_checklist`。
+- Validation:
+  - [x] `uv run ruff check .`
+  - [x] `uv run pytest`（50 passed）
+- Notes:
+  - 新增 `app.recommendation`，重用 rule_engine 既有 `build_document_checklist` 與 `detect_conflicts`。
+
 ## Strategy
 
 Keep `active.md` compact. Every active task must include an `Owner` from `docs/team/members.md`. Use `project` only for placeholder or unassigned setup work; `doing` tasks should be assigned to a real member. Put task-level details in dedicated `docs/tasks/*.md`, detailed implementation notes in per-member session logs, and future ideas in `docs/tasks/backlog.md`.

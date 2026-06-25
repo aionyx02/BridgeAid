@@ -9,10 +9,11 @@ rule engine's call; this layer only gathers fields and presents results.
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-from ..rule_engine import POSSIBLE, evaluate_all
+from ..recommendation import build_recommendation
+from ..rule_engine import evaluate_all
 from .intent import DeterministicIntentParser, IntentParser
 from .questions import QUESTIONS, SKIP
 
@@ -37,6 +38,8 @@ class Reply:
     text: str
     options: list[str] = field(default_factory=list)
     results: list[dict[str, Any]] = field(default_factory=list)
+    conflicts: list[dict[str, Any]] = field(default_factory=list)
+    document_checklist: list[dict[str, Any]] = field(default_factory=list)
 
 
 class SessionStore(Protocol):
@@ -60,6 +63,22 @@ class InMemorySessionStore:
         self._sessions[session.session_id] = session
 
 
+def _apply_answer(session: Session, field_name: str, text: str) -> None:
+    answer = text.strip()
+    question = QUESTIONS.get(field_name)
+    if question is not None and question.options:
+        for label, value in question.options:
+            if answer == label:
+                if value != SKIP:
+                    session.profile[field_name] = value
+                return
+    # Free-text / unmatched: let the field-specific or general parser handle it.
+    if field_name == "age":
+        digits = "".join(ch for ch in answer if ch.isdigit())
+        if digits:
+            session.profile["age"] = int(digits)
+
+
 class ConversationManager:
     def __init__(
         self,
@@ -68,6 +87,7 @@ class ConversationManager:
         parser: IntentParser | None = None,
     ) -> None:
         self._rules = rules
+        self._rules_by_id = {rule["id"]: rule for rule in rules}
         self._store = store
         self._parser = parser or DeterministicIntentParser()
 
@@ -76,7 +96,7 @@ class ConversationManager:
         session.channel = channel
 
         if session.pending_field is not None:
-            self._apply_answer(session, session.pending_field, text)
+            _apply_answer(session, session.pending_field, text)
             session.pending_field = None
 
         session.profile.update(self._parser.extract(text))
@@ -85,24 +105,8 @@ class ConversationManager:
         self._store.save(session)
         return reply
 
-    def _apply_answer(self, session: Session, field_name: str, text: str) -> None:
-        answer = text.strip()
-        question = QUESTIONS.get(field_name)
-        if question is not None and question.options:
-            for label, value in question.options:
-                if answer == label:
-                    if value != SKIP:
-                        session.profile[field_name] = value
-                    return
-        # Free-text / unmatched: let the field-specific or general parser handle it.
-        if field_name == "age":
-            digits = "".join(ch for ch in answer if ch.isdigit())
-            if digits:
-                session.profile["age"] = int(digits)
-
     def _next_reply(self, session: Session) -> Reply:
         evaluations = evaluate_all(self._rules, session.profile)
-        possible = [e for e in evaluations if e.status == POSSIBLE]
 
         next_field = self._pick_next_field(evaluations, session.asked_fields)
         if next_field is not None and len(session.asked_fields) < MAX_QUESTIONS:
@@ -115,7 +119,7 @@ class ConversationManager:
                 options=[label for label, _ in question.options],
             )
 
-        return self._result_reply(possible)
+        return self._result_reply(evaluations)
 
     @staticmethod
     def _pick_next_field(evaluations: list[Any], asked_fields: list[str]) -> str | None:
@@ -132,16 +136,25 @@ class ConversationManager:
         # most_common breaks ties by insertion order -> deterministic
         return counter.most_common(1)[0][0]
 
-    @staticmethod
-    def _result_reply(possible: list[Any]) -> Reply:
-        if not possible:
+    def _result_reply(self, evaluations: list[Any]) -> Reply:
+        recommendation = build_recommendation(evaluations, self._rules_by_id)
+        if not recommendation.possible:
             return Reply(
                 kind=KIND_RESULT,
                 text="目前提供的資訊還不足以判斷可能符合的服務，建議洽詢居住地公所或社會局確認。",
             )
-        names = "、".join(e.service_name for e in possible)
+        names = "、".join(service["service_name"] for service in recommendation.possible)
         text = (
             f"根據你提供的資訊，你「可能符合」以下服務：{names}。"
             "實際仍需由承辦單位依正式資料確認。"
         )
-        return Reply(kind=KIND_RESULT, text=text, results=[asdict(e) for e in possible])
+        if recommendation.conflicts:
+            pairs = "；".join("、".join(c["service_ids"]) for c in recommendation.conflicts)
+            text += f"（注意：部分服務可能需擇一：{pairs}）"
+        return Reply(
+            kind=KIND_RESULT,
+            text=text,
+            results=recommendation.possible,
+            conflicts=recommendation.conflicts,
+            document_checklist=recommendation.document_checklist,
+        )

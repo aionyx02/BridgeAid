@@ -15,9 +15,9 @@ owner: project
 
 ## 部署策略
 
-- 黑客松階段：Docker Compose 一鍵起 Next.js + FastAPI + PostgreSQL + Redis。
-- 決選階段：Render / Fly.io / GCP，強化雲端架構與可觀測性。
-- secrets 以環境變數注入（LINE token、LLM key、DB 連線），不進版控。
+- **現階段（決定）：先本地**。PostgreSQL 跑在本機，`DATABASE_URL` 指向本地（如 `postgresql://localhost/bridgeaid`）；後端以 `uv run uvicorn app.main:app` 本地常駐。之後再搬到其他位置。
+- 黑客松/決選階段：Docker Compose 一鍵起 Next.js + FastAPI + PostgreSQL + Redis；雲端（Render / Fly.io / GCP）日後再評估。
+- secrets 走 OS keychain（fallback 環境變數），不進版控（見 `docs/security.md`）。
 
 ## Release Checklist
 

@@ -38,8 +38,8 @@ owner: project
 | Endpoint / Function | Input | Output | Error |
 |---|---|---|---|
 | `GET /healthz` | — | `{status, rules_loaded, line_configured, db_configured}` | — |
-| `POST /recommend` | `{profile: {...}}` | `{results: [{service_id, service_name, status, hit_conditions, missing_fields, documents, needs_review, source}]}` | 422 (驗證) |
-| `POST /chat` | `{session_id, message}` | `{kind: "question"\|"result", text, options[], results[]}` | 422 (驗證) |
+| `POST /recommend` | `{profile: {...}}` | `{results: [{service_id, service_name, status, hit_conditions, missing_fields, documents, needs_review, source}], conflicts: [{service_ids, type, reason}], document_checklist: [{document, services}]}` | 422 (驗證) |
+| `POST /chat` | `{session_id, message}` | `{kind: "question"\|"result", text, options[], results[], conflicts[], document_checklist[]}` | 422 (驗證) |
 | `POST /line/webhook` | raw body + `X-Line-Signature` | `{status: "ok"}` | 401（簽章錯）/ 503（未設定 secret） |
 | `rule_engine.evaluate_all()` | rules, profile | `Evaluation[]`（possible/insufficient_data/unlikely） | — |
 

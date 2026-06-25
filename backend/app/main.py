@@ -23,6 +23,7 @@ from . import config
 from .conversation import ConversationManager, InMemorySessionStore
 from .line.client import build_reply_client
 from .line.webhook import verify_signature
+from .recommendation import build_recommendation
 from .rule_engine import evaluate_all, load_rules
 
 app = FastAPI(title="BridgeAid", summary="Proactive Public Service Navigator")
@@ -35,6 +36,11 @@ reply_client = build_reply_client()
 def _rules() -> list[dict[str, Any]]:
     """Load and cache validated service rules once per process."""
     return load_rules()
+
+
+@lru_cache(maxsize=1)
+def _rules_by_id() -> dict[str, dict[str, Any]]:
+    return {rule["id"]: rule for rule in _rules()}
 
 
 @lru_cache(maxsize=1)
@@ -68,8 +74,13 @@ def healthz() -> dict[str, Any]:
 @app.post("/recommend")
 def recommend(request: RecommendRequest) -> dict[str, Any]:
     """Return explainable recommendations. AI never decides eligibility here."""
-    results = evaluate_all(_rules(), request.profile)
-    return {"results": [asdict(result) for result in results]}
+    evaluations = evaluate_all(_rules(), request.profile)
+    recommendation = build_recommendation(evaluations, _rules_by_id())
+    return {
+        "results": [asdict(result) for result in evaluations],
+        "conflicts": recommendation.conflicts,
+        "document_checklist": recommendation.document_checklist,
+    }
 
 
 @app.post("/chat")

@@ -32,9 +32,10 @@ owner: project
 `POST /chat`（`{session_id, message}`）每次回傳一個 `Reply`：
 
 - `kind: "question"`：`text` 為追問問題，`options[]` 為按鈕標籤（降低打字負擔，一輪最多 3 題）。
-- `kind: "result"`：`text` 為白話摘要（「可能符合…需承辦單位確認」），`results[]` 為可能服務（含 `status`、`documents`、`source`、`needs_review`）。
+- `kind: "result"`：`text` 為白話摘要（「可能符合…需承辦單位確認」），`results[]` 為可能服務（含 `status`、`documents`、`source`、`needs_review`）；另含 `conflicts[]`（擇一/互斥提示）與 `document_checklist[]`（跨服務去重的合併文件清單，每項標 `services`）。
+- 衝突提示（如租金補貼 vs 社會住宅 choose_one）顯示為「需擇一」；合併 checklist 可勾選/匯出。
 
-前端依 `kind` 切換「追問氣泡 + quick-reply 按鈕」或「推薦清單卡片」。LINE 端由 webhook 走同一流程，`options` 轉為 LINE quick reply。
+前端依 `kind` 切換「追問氣泡 + quick-reply 按鈕」或「推薦清單卡片 + 合併文件 checklist + 擇一提示」。LINE 端由 webhook 走同一流程，`options` 轉為 LINE quick reply。
 
 ## Component Boundary Rules
 

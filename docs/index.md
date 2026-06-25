@@ -75,6 +75,7 @@ Use this file as the first lookup step. The goal is retrieval-first context, not
 | `docs/adr/0001-html-ui-documentation-boundary.md` | `adr` | `proposed` | `on_demand` | HTML And UI Documentation Boundary |
 | `docs/adr/0002-bridgeaid-initial-architecture-and-ai-boundary.md` | `adr` | `accepted` | `on_demand` | BridgeAid initial architecture and AI boundary |
 | `docs/adr/0003-backend-skeleton-persistence-secrets-and-api-surface.md` | `adr` | `accepted` | `on_demand` | Backend skeleton: persistence, secrets, and API surface |
+| `docs/adr/0004-llm-intent-parser-via-local-ollama.md` | `adr` | `proposed` | `on_demand` | LLM intent parser via local Ollama |
 | `docs/architecture.md` | `architecture_spec` | `active` | `retrieve_only` | Architecture |
 | `docs/CLAUDE.md` | `agent_policy` | `active` | `on_demand` | AI Agent Governance And ADR Policy |
 | `docs/conventions.md` | `coding_conventions` | `active` | `retrieve_when_planning` | Coding Conventions |

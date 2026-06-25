@@ -56,6 +56,23 @@ def _settings(secret=None):
     )
 
 
+def test_recommend_includes_conflicts_and_checklist():
+    response = client.post(
+        "/recommend",
+        json={
+            "profile": {
+                "residence_city": "Taipei",
+                "has_lease": True,
+                "income_status": "near_threshold",
+                "age": 30,
+            }
+        },
+    )
+    body = response.json()
+    assert any(c["type"] == "choose_one" for c in body["conflicts"])
+    assert body["document_checklist"]
+
+
 def test_webhook_503_when_not_configured(monkeypatch):
     monkeypatch.setattr(config, "load_settings", lambda: _settings())
     response = client.post("/line/webhook", content=b"{}")
