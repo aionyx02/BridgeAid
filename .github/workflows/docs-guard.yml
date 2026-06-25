@@ -1,0 +1,28 @@
+name: docs-guard
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  docs-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm run docs:refresh
+      - run: git diff --exit-code
+
+  project-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm run lint
+      - run: npm run security:scan
+      - run: npm run test
+      - run: npm run build --if-present

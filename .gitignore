@@ -1,0 +1,20 @@
+# Node / context-engineering tooling
+node_modules/
+dist/
+build/
+.context/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Env / secrets
+.env
+.env.*
+
+# OS
+.DS_Store
+
+# Source template archive (extracted into repo already)
+context_engineering_template-main.zip
