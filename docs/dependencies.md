@@ -27,6 +27,9 @@ owner: project
 | LINE Messaging API | 主要入口與提醒通道 | runtime | yes | 臺灣場景自然 |
 | LLM API | 意圖辨識、欄位抽取、白話/多語轉寫 | runtime | yes | adapter 化，可換供應商 |
 | Redis + Celery/RQ | 提醒、來源檢查排程 | infra | yes | MVP 簡化版 |
+| jsonschema | 服務規則 schema 驗證（TASK.002） | runtime | yes | draft 2020-12；規則為不可信輸入需驗證 |
+| pytest | 應用層測試 | dev | yes | 由 uv 管理 |
+| ruff | lint / format | dev | yes | 由 uv 管理 |
 | 文件治理 guard（Node） | docs/context 治理 | dev | no | 隨模板提供，不進應用 runtime |
 
 ## Rejected / Deferred Dependencies

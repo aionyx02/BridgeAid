@@ -29,26 +29,6 @@ owner: project
 - Notes:
   - 詳細服務整理放 `docs/data.md` 與後續 task 檔。
 
-### TASK.002 - 資料格式與規則引擎原型
-
-- Status: todo
-- Priority: P0
-- Owner: shawn
-- Started: 2026-06-25
-- Related docs:
-  - `docs/data.md`
-  - `docs/architecture.md`
-  - `docs/testing.md`
-- Acceptance criteria:
-  - [ ] 定義服務規則 JSON schema 與 eligibility/conflict/document 結構。
-  - [ ] rule evaluator 能輸出 possible / insufficient_data / unlikely 並附命中條件。
-  - [ ] 至少 5 筆服務規則通過 schema 驗證。
-- Validation:
-  - [ ] `pytest`（rule engine 測試案例）
-  - [ ] `npm run docs:refresh`
-- Notes:
-  - 重大資料契約變更需先建立或更新 ADR。
-
 ### TASK.003 - 後端 API 與資料庫骨架
 
 - Status: todo

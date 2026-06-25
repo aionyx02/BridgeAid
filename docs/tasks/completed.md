@@ -14,3 +14,4 @@ owner: project
 | Task | Summary | Session |
 |---|---|---|
 | `TASK.000` | Context engineering 初始化與 docs:ready 驗收通過 | `docs/memory/sessions/2026-06-25-shawn.md` |
+| `TASK.002` | 規則引擎 JSON schema 與 evaluator 雛形（schema + 5 rules + 14 tests 全綠） | `docs/memory/sessions/2026-06-25-shawn.md` |

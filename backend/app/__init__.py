@@ -1,0 +1,1 @@
+"""BridgeAid backend application package."""

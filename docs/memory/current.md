@@ -18,8 +18,8 @@ owner: project
 
 ## Current Focus
 
-- Active priority: 完成 context engineering 初始化並通過 docs:ready；準備進入 Week 1（題目收斂、Persona、服務清單）。
-- Current phase: 專案啟動 / 文件治理就緒，尚無應用程式碼。
+- Active priority: 規則引擎雛形已完成（TASK.002：schema + evaluator + 5 rules + 14 tests）；下一步 TASK.003 後端 API 與 PostgreSQL 骨架。
+- Current phase: rule engine 雛形可運作；尚無 FastAPI/DB 與對話流程。
 - Current owner / handoff state: shawn（maintainer）；團隊其他成員尚未登錄。
 
 ## Important Constraints
@@ -31,10 +31,11 @@ owner: project
 
 ## Next Step
 
-- 整理 5–10 筆 MVP 服務候選與官方來源，並設計 JSON rule schema（見 TASK.002）。
+- TASK.003：設計 PostgreSQL schema 並寫 JSON→DB 匯入工具，重用 `app.rule_engine.load_rules`。
+- 補齊 5–10 筆服務的真實官方來源 URL 並由人工審核（目前為示範 example.gov.tw）。
 
 ## Last Validation Snapshot
 
 - Last docs refresh: 2026-06-25
-- Last test command: npm run docs:ready
+- Last test command: uv run pytest -q（14 passed）/ npm run docs:ready
 - Known failing checks: none

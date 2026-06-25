@@ -1,0 +1,25 @@
+{
+  "id": "long_term_care_central",
+  "name": "長期照顧服務（長照 2.0）",
+  "category": "long_term_care",
+  "jurisdiction": "central",
+  "area": { "type": "nationwide" },
+  "status": "active",
+  "version": "2026.06",
+  "eligibility_rules": {
+    "any": [
+      { "field": "caregiver", "operator": "equals", "value": true },
+      { "field": "care_need", "operator": "equals", "value": true }
+    ]
+  },
+  "required_documents": [
+    { "name": "身分證明文件", "condition": "always" },
+    { "name": "失能或診斷證明", "condition": { "field": "care_need", "operator": "equals", "value": true } }
+  ],
+  "conflicts": [],
+  "source": {
+    "title": "衛生福利部 - 長照 2.0 專區",
+    "url": "https://example.gov.tw/central/long-term-care",
+    "last_checked_at": "2026-06-25"
+  }
+}

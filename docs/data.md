@@ -41,32 +41,49 @@ owner: project
 | `POST /recommend` | extracted_profile | services[] (status, hit_rules, missing, documents, sources) | `{code, message}` |
 | `rule_engine.evaluate()` | profile, rule_jsonb | possible / insufficient_data / unlikely + hit conditions | raises ValidationError |
 
-## 規則 JSON 範例
+## 規則格式與規則引擎（TASK.002）
+
+- 正式契約：`data/schemas/service-rule.schema.json`（JSON Schema draft 2020-12）。
+- 規則檔：`data/services/*.json`（每筆需通過 schema 驗證才入庫）。
+- 規則引擎：`backend/app/rule_engine/`（`loader` 驗證、`evaluator` 判斷、`operators` 比較）。
+- 條件 operator 允許清單（固定，不用 eval）：`equals`、`not_equals`、`in`、`not_in`、`gt`、`gte`、`lt`、`lte`、`exists`。
+- `eligibility_rules` 為遞迴的 `all` / `any` 群組 + leaf condition `{field, operator, value}`。
+- `required_documents[].condition` 為 `"always"` 或一個 condition 物件（不採字串 DSL，避免 eval 風險）。
+- profile 欄位值採固定 token（如 `event_type`：`unemployment` / `illness` / `fire` / `major_accident` / `death_in_family`）。
+
+### 規則 JSON 範例
 
 ```json
 {
-  "id": "demo_emergency_aid_taipei",
-  "name": "急難救助示範服務",
+  "id": "emergency_aid_taipei",
+  "name": "臺北市急難救助",
   "category": "emergency_aid",
   "jurisdiction": "local",
   "area": { "type": "city", "value": "Taipei" },
+  "status": "active",
+  "version": "2026.06",
   "eligibility_rules": {
     "all": [
       { "field": "residence_city", "operator": "equals", "value": "Taipei" },
       { "any": [
-        { "field": "event_type", "operator": "in", "value": ["失業","傷病","火災","重大事故"] },
-        { "field": "income_status", "operator": "in", "value": ["低收入戶","中低收入戶","邊緣戶"] }
+        { "field": "event_type", "operator": "in", "value": ["unemployment", "illness", "fire", "major_accident"] },
+        { "field": "income_status", "operator": "in", "value": ["low_income", "mid_low_income", "near_threshold"] }
       ]}
     ]
   },
   "required_documents": [
     { "name": "身分證明文件", "condition": "always" },
-    { "name": "事故證明", "condition": "event_type in ['火災','重大事故']" },
-    { "name": "診斷證明", "condition": "event_type == '傷病'" }
+    { "name": "事故證明", "condition": { "field": "event_type", "operator": "in", "value": ["fire", "major_accident"] } }
   ],
   "source": { "title": "官方服務頁或公告", "url": "https://example.gov.tw", "last_checked_at": "2026-06-25" }
 }
 ```
+
+### 評估輸出
+
+- 三態：`possible` / `insufficient_data` / `unlikely`，附 `hit_conditions` 與真正阻擋的 `missing_fields`。
+- `needs_review` 服務（來源過期/未審）以旗標標示，不列為高信心。
+- `detect_conflicts` 找出 `choose_one` / `exclusive` 衝突（如租金補貼 vs 社會住宅）。
 
 ## Persistence Rules
 

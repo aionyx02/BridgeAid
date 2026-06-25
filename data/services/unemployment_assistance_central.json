@@ -1,0 +1,25 @@
+{
+  "id": "unemployment_assistance_central",
+  "name": "失業給付與就業協助",
+  "category": "unemployment",
+  "jurisdiction": "central",
+  "area": { "type": "nationwide" },
+  "status": "needs_review",
+  "version": "2026.06",
+  "eligibility_rules": {
+    "all": [
+      { "field": "event_type", "operator": "equals", "value": "unemployment" },
+      { "field": "employment_insured", "operator": "equals", "value": true }
+    ]
+  },
+  "required_documents": [
+    { "name": "身分證明文件", "condition": "always" },
+    { "name": "離職證明", "condition": "always" }
+  ],
+  "conflicts": [],
+  "source": {
+    "title": "勞動部 - 失業給付",
+    "url": "https://example.gov.tw/central/unemployment",
+    "last_checked_at": "2026-05-01"
+  }
+}

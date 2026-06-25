@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bridgeaid/schemas/service-rule.schema.json",
+  "title": "BridgeAid Service Rule",
+  "description": "A single public-service definition: eligibility rules, required documents, conflicts, and traceable source. AI never decides eligibility; the rule engine evaluates this structure.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "category", "jurisdiction", "version", "eligibility_rules", "source"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$",
+      "description": "Stable snake_case identifier; recommendations bind to this id."
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "category": {
+      "type": "string",
+      "enum": ["emergency_aid", "housing", "long_term_care", "unemployment", "other"]
+    },
+    "jurisdiction": { "type": "string", "enum": ["central", "local"] },
+    "area": { "$ref": "#/$defs/area" },
+    "status": {
+      "type": "string",
+      "enum": ["active", "needs_review"],
+      "default": "active",
+      "description": "needs_review when the source is stale or unverified; excluded from high-confidence results."
+    },
+    "version": { "type": "string", "minLength": 1 },
+    "eligibility_rules": { "$ref": "#/$defs/group" },
+    "required_documents": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/document" },
+      "default": []
+    },
+    "conflicts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/conflict" },
+      "default": []
+    },
+    "source": { "$ref": "#/$defs/source" }
+  },
+  "$defs": {
+    "area": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "type": "string", "enum": ["nationwide", "city", "county"] },
+        "value": { "type": "string", "description": "Required unless type is nationwide." }
+      },
+      "if": { "properties": { "type": { "const": "nationwide" } } },
+      "then": true,
+      "else": { "required": ["value"] }
+    },
+    "operator": {
+      "type": "string",
+      "enum": ["equals", "not_equals", "in", "not_in", "gt", "gte", "lt", "lte", "exists"]
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "operator"],
+      "properties": {
+        "field": { "type": "string", "minLength": 1 },
+        "operator": { "$ref": "#/$defs/operator" },
+        "value": {}
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "operator": { "enum": ["equals", "not_equals", "in", "not_in", "gt", "gte", "lt", "lte"] } } },
+          "then": { "required": ["value"] }
+        }
+      ]
+    },
+    "group": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Exactly one of all/any. all = every node must hold; any = at least one must hold.",
+      "properties": {
+        "all": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/node" } },
+        "any": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/node" } }
+      },
+      "oneOf": [
+        { "required": ["all"] },
+        { "required": ["any"] }
+      ]
+    },
+    "node": {
+      "oneOf": [
+        { "$ref": "#/$defs/group" },
+        { "$ref": "#/$defs/condition" }
+      ]
+    },
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "condition"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "condition": {
+          "oneOf": [
+            { "type": "string", "const": "always" },
+            { "$ref": "#/$defs/condition" }
+          ]
+        }
+      }
+    },
+    "conflict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["service_id", "type", "reason"],
+      "properties": {
+        "service_id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "type": { "type": "string", "enum": ["exclusive", "choose_one"] },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "url", "last_checked_at"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "url": { "type": "string", "format": "uri" },
+        "last_checked_at": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" }
+      }
+    }
+  }
+}

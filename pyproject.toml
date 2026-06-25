@@ -2,4 +2,24 @@
 name = "bridgeaid"
 version = "0.1.0"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "jsonschema>=4.26.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.15.19",
+]
+
+[tool.pytest.ini_options]
+# backend/ holds the `app` package; tests import `app.rule_engine`.
+pythonpath = ["backend"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+src = ["backend", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

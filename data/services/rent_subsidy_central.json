@@ -1,0 +1,28 @@
+{
+  "id": "rent_subsidy_central",
+  "name": "中央租金補貼",
+  "category": "housing",
+  "jurisdiction": "central",
+  "area": { "type": "nationwide" },
+  "status": "active",
+  "version": "2026.06",
+  "eligibility_rules": {
+    "all": [
+      { "field": "has_lease", "operator": "equals", "value": true },
+      { "field": "income_status", "operator": "in", "value": ["low_income", "mid_low_income", "near_threshold", "general"] }
+    ]
+  },
+  "required_documents": [
+    { "name": "身分證明文件", "condition": "always" },
+    { "name": "租賃契約", "condition": "always" },
+    { "name": "收入證明", "condition": "always" }
+  ],
+  "conflicts": [
+    { "service_id": "social_housing_taipei", "type": "choose_one", "reason": "同一租屋需求，租金補貼與承租社會住宅通常擇一。" }
+  ],
+  "source": {
+    "title": "內政部 - 住宅補貼（租金補貼）",
+    "url": "https://example.gov.tw/central/rent-subsidy",
+    "last_checked_at": "2026-06-25"
+  }
+}
