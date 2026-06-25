@@ -29,26 +29,27 @@ owner: project
 - Notes:
   - 詳細服務整理放 `docs/data.md` 與後續 task 檔。
 
-### TASK.003 - 後端 API 與資料庫骨架
+### TASK.004 - 對話流程與欄位追問（Web /chat + LINE）
 
 - Status: review
-- Priority: P1
+- Priority: P0
 - Owner: shawn
 - Started: 2026-06-25
 - Related docs:
   - `docs/architecture.md`
-  - `docs/dependencies.md`
-  - `docs/adr/0003-backend-skeleton-persistence-secrets-and-api-surface.md`
+  - `docs/ui.md`
+  - `docs/data.md`
 - Acceptance criteria:
-  - [x] FastAPI 專案骨架與 PostgreSQL schema（`db/schema.sql` 九張表）。
-  - [~] 服務匯入工具（`app.importer`）：轉換已測；待真實 DB 實跑驗證。
-  - [x] LINE webhook 簽章驗證 + 憑證走 OS keychain（env fallback）。
+  - [x] Session 狀態管理：保存已抽取欄位、追問次數（一次不超過 3 題）。
+  - [x] 依規則引擎缺失欄位動態追問，足夠後輸出推薦摘要（服務/文件/來源）。
+  - [x] `POST /chat` 對話端點可多輪運作；LINE webhook 事件接到同一流程。
 - Validation:
   - [x] `uv run ruff check .`
-  - [x] `uv run pytest`（32 passed）
+  - [x] `uv run pytest`（45 passed）
 - Notes:
-  - 依工程優先序：先安全/個資邊界，再效能，再解耦。
-  - 卡點：ADR-0003 待 maintainer 接受；伺服器/DB 位置未定，骨架在無 DB/無 secret 時仍可啟動（degraded）。
+  - deterministic intent parser（關鍵字→欄位 token）；LLM adapter 為 port，之後接入（屆時另開 ADR：新增 LLM 依賴 + 金鑰 + 網路 egress）。
+  - Session 為 in-memory store；DB 持久化（`user_sessions`）為後續。
+  - 待真實 LINE 連線驗證 reply/push（需 channel access token + 公開 webhook URL）。
 
 ## Strategy
 

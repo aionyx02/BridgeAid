@@ -11,7 +11,9 @@ owner: project
 
 ## Future Work
 
-- [ ] LINE/Web 對話流程與 session 欄位追問（Week 4）。
+- [ ] 對真實 PostgreSQL 實跑 `db/schema.sql` + `app.importer`（TASK.003 後續，待 DB/伺服器位置決定）。
+- [ ] LINE 實連驗證 reply/push（client 已實作；需 channel access token + 公開 webhook URL）。
+- [ ] 接入 LLM intent parser（替換 deterministic parser；新增依賴+金鑰，需另開 ADR）。
 - [ ] 文件 checklist 產生器與衝突檢查規則（Week 5）。
 - [ ] 提醒系統（LINE/Email）與來源追溯 UI（Week 6）。
 - [ ] 後台管理頁：維護服務、規則 JSON 與來源審核狀態。

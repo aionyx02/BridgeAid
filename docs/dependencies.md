@@ -32,9 +32,9 @@ owner: project
 | uvicorn[standard] | ASGI server（本地常駐） | runtime | yes | `uvicorn app.main:app` |
 | psycopg[binary] | PostgreSQL 存取 | runtime | yes | v3；僅設定 DATABASE_URL 時連線 |
 | keyring | 從 OS keychain 讀憑證 | runtime | yes | Windows→Credential Manager；env fallback |
+| httpx | LINE reply API client + TestClient | runtime | yes | `app.line.client` 用 |
 | pytest | 應用層測試 | dev | yes | 由 uv 管理 |
 | ruff | lint / format | dev | yes | 由 uv 管理 |
-| httpx | FastAPI TestClient | dev | yes | 測試用 |
 | 文件治理 guard（Node） | docs/context 治理 | dev | no | 隨模板提供，不進應用 runtime |
 
 ## Rejected / Deferred Dependencies

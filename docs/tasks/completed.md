@@ -15,3 +15,5 @@ owner: project
 |---|---|---|
 | `TASK.000` | Context engineering 初始化與 docs:ready 驗收通過 | `docs/memory/sessions/2026-06-25-shawn.md` |
 | `TASK.002` | 規則引擎 JSON schema 與 evaluator 雛形（schema + 5 rules + 14 tests 全綠） | `docs/memory/sessions/2026-06-25-shawn.md` |
+| `TASK.003` | 後端骨架（FastAPI + schema.sql + importer + LINE 驗章 + keychain）；ADR-0003 accepted；live DB 實跑列 backlog | `docs/memory/sessions/2026-06-25-shawn.md` |
+| `TASK.004` | 對話流程與欄位追問（/chat + LINE webhook，deterministic parser，45 tests 全綠）；live LINE reply 驗證列 backlog | `docs/memory/sessions/2026-06-25-shawn.md` |

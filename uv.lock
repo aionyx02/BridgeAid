@@ -47,6 +47,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
+    { name = "httpx" },
     { name = "jsonschema" },
     { name = "keyring" },
     { name = "psycopg", extra = ["binary"] },
@@ -55,7 +56,6 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "httpx" },
     { name = "pytest" },
     { name = "ruff" },
 ]
@@ -63,6 +63,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = ">=0.138.0" },
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "jsonschema", specifier = ">=4.26.0" },
     { name = "keyring", specifier = ">=25.7.0" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3.4" },
@@ -71,7 +72,6 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "httpx", specifier = ">=0.28.1" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "ruff", specifier = ">=0.15.19" },
 ]

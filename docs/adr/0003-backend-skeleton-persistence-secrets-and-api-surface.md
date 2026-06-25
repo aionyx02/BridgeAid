@@ -1,23 +1,23 @@
 ---
 type: adr
-status: proposed
+status: accepted
 priority: p1
 updated: 2026-06-25
 context_policy: on_demand
 owner: project
 ---
-
 # ADR-0003: Backend skeleton: persistence, secrets, and API surface
 
 ## Status
 
-Proposed
+accepted
 
-（依 docs/CLAUDE.md §3，AI 僅能建立 proposed；本 ADR 涉及 DB schema、憑證處理與對外 API 契約，需 maintainer 確認後才能定為 accepted 並據此擴大，例如對真實資料庫執行 migration、固定為公開契約。）
+（已由 maintainer 於 2026-06-25 確認接受。可據此擴大：對真實資料庫執行 migration、將 schema 與 API 視為公開契約。）
 
 ## Context
 
 TASK.003 要建立後端骨架：FastAPI + PostgreSQL，以及把 `data/services/*.json` 規則匯入 DB 的工具。新增限制：
+
 - 使用者已申請 LINE bot 憑證；憑證**不可進版控/日誌**，且後端「本地常駐」執行時要能安全取得。
 - 伺服器架設位置未定（之後決定），故骨架不可綁死特定雲端或要求即時連線到資料庫才能啟動。
 - ADR-0002 已接受技術棧（FastAPI / PostgreSQL / LINE / 規則引擎決策）；本 ADR 只定 schema、憑證與 API 的**具體做法**。
@@ -50,11 +50,12 @@ TASK.003 要建立後端骨架：FastAPI + PostgreSQL，以及把 `data/services
 
 ## Alternatives Considered
 
-| Option | Pros | Cons | Reason not chosen |
-|---|---|---|---|
-| 用 .env 檔存 LINE secret | 簡單 | 易誤入版控/日誌 | 改用 OS keychain + env fallback |
-| SQLAlchemy ORM + Alembic | 功能完整 | 大型依賴、過早抽象 | 骨架階段用 psycopg + schema.sql |
-| 引入 line-bot-sdk | 省驗章程式 | 多一個依賴、黑箱 | stdlib hmac 驗章足夠且透明 |
+
+| Option                   | Pros       | Cons               | Reason not chosen               |
+| ------------------------ | ---------- | ------------------ | ------------------------------- |
+| 用 .env 檔存 LINE secret | 簡單       | 易誤入版控/日誌    | 改用 OS keychain + env fallback |
+| SQLAlchemy ORM + Alembic | 功能完整   | 大型依賴、過早抽象 | 骨架階段用 psycopg + schema.sql |
+| 引入 line-bot-sdk        | 省驗章程式 | 多一個依賴、黑箱   | stdlib hmac 驗章足夠且透明      |
 
 ## Security Review
 

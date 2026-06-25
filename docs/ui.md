@@ -27,6 +27,15 @@ owner: project
 | 來源透明化 | 顯示官方來源、更新日期、規則版本 | 可追溯 |
 | 建立提醒 | opt-in，補件/期限/續辦提醒 | 可建立/列出/取消 |
 
+## 對話回合模型（TASK.004）
+
+`POST /chat`（`{session_id, message}`）每次回傳一個 `Reply`：
+
+- `kind: "question"`：`text` 為追問問題，`options[]` 為按鈕標籤（降低打字負擔，一輪最多 3 題）。
+- `kind: "result"`：`text` 為白話摘要（「可能符合…需承辦單位確認」），`results[]` 為可能服務（含 `status`、`documents`、`source`、`needs_review`）。
+
+前端依 `kind` 切換「追問氣泡 + quick-reply 按鈕」或「推薦清單卡片」。LINE 端由 webhook 走同一流程，`options` 轉為 LINE quick reply。
+
 ## Component Boundary Rules
 
 - 一個元件一個清楚責任。

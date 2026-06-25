@@ -18,8 +18,8 @@ owner: project
 
 ## Current Focus
 
-- Active priority: TASK.003 後端骨架已實作（FastAPI + schema.sql + importer + LINE 驗章 + keychain）；待 ADR-0003 接受、架好 DB 並實跑匯入。
-- Current phase: API 可在 degraded mode 啟動（/healthz、/recommend、/line/webhook）；尚無真實 DB 與對話流程。
+- Active priority: TASK.004 對話流程已實作（/chat + LINE webhook、deterministic intent parser、≤3 題追問、規則引擎推薦）。ADR-0002/0003 已 accepted。
+- Current phase: API degraded mode 可跑（/healthz、/recommend、/chat、/line/webhook）；session 為 in-memory；尚無真實 DB、LLM 與 LINE 實連。
 - Current owner / handoff state: shawn（maintainer）；團隊其他成員尚未登錄。
 
 ## Important Constraints
@@ -31,8 +31,9 @@ owner: project
 
 ## Next Step
 
-- 由 maintainer 確認 ADR-0003；架設 PostgreSQL（位置待定）後 `psql -f db/schema.sql` 並 `uv run python -m app.importer` 實跑匯入。
-- 使用者把 LINE 憑證存入 keychain：`uv run keyring set bridgeaid LINE_CHANNEL_SECRET`（+ ACCESS_TOKEN）。
+- 候選下一任務：文件 checklist 與衝突檢查整合進 /chat 結果（Week 5）；或提醒系統與來源追溯 UI（Week 6）。
+- 使用者把 LINE 憑證存入 keychain（`uv run keyring set bridgeaid LINE_CHANNEL_ID / LINE_CHANNEL_SECRET / LINE_CHANNEL_ACCESS_TOKEN`），再做 LINE 實連驗證。
+- 架設 PostgreSQL（位置待定）後 `psql -f db/schema.sql` + `uv run python -m app.importer`。
 - 補齊 5–10 筆服務的真實官方來源 URL 並由人工審核（目前為示範 example.gov.tw）。
 
 ## Last Validation Snapshot

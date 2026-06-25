@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import json
+
 import pytest
 from fastapi.testclient import TestClient
 
-from app import config
+from app import config, main
 from app.line.webhook import expected_signature
 from app.main import app
 
@@ -75,6 +77,40 @@ def test_webhook_rejects_invalid_signature(monkeypatch):
         "/line/webhook", content=b'{"events":[]}', headers={"X-Line-Signature": "bad"}
     )
     assert response.status_code == 401
+
+
+def test_webhook_runs_conversation_and_replies(monkeypatch):
+    monkeypatch.setattr(config, "load_settings", lambda: _settings(SECRET))
+
+    captured = []
+
+    class FakeReplyClient:
+        def reply(self, access_token, reply_token, reply):
+            captured.append((access_token, reply_token, reply))
+
+    monkeypatch.setattr(main, "reply_client", FakeReplyClient())
+
+    body = json.dumps(
+        {
+            "events": [
+                {
+                    "type": "message",
+                    "message": {"type": "text", "text": "我最近失業，房租快繳不出來"},
+                    "replyToken": "rt1",
+                    "source": {"userId": "u-webhook-1"},
+                }
+            ]
+        }
+    ).encode("utf-8")
+    headers = {"X-Line-Signature": expected_signature(SECRET, body)}
+
+    response = client.post("/line/webhook", content=body, headers=headers)
+    assert response.status_code == 200
+    assert len(captured) == 1
+    access_token, reply_token, reply = captured[0]
+    assert access_token == "token"
+    assert reply_token == "rt1"
+    assert reply.text
 
 
 if __name__ == "__main__":  # pragma: no cover
