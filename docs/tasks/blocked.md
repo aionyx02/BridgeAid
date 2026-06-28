@@ -2,7 +2,7 @@
 type: task_blockers
 status: active
 priority: p1
-updated: 2026-06-25
+updated: 2026-06-26
 context_policy: retrieve_when_planning
 owner: project
 ---
@@ -11,7 +11,7 @@ owner: project
 
 ## Blocked
 
-- 5–10 筆正式服務規則的官方來源 URL 待人工查證與審核（規則需人工審核後才入庫為高信心推薦）。
+- 正式服務規則的細部資格條件仍需人工政策審核；目前 demo 已核對官方來源，部分服務以 `needs_review` 避免高信心呈現。
 - 團隊其他成員（含至少 1 位非中華民國國籍成員）尚未確定與登錄。
 
 ## Requires Explicit Approval

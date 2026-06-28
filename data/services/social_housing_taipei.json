@@ -4,12 +4,12 @@
   "category": "housing",
   "jurisdiction": "local",
   "area": { "type": "city", "value": "Taipei" },
-  "status": "active",
+  "status": "needs_review",
   "version": "2026.06",
   "eligibility_rules": {
     "all": [
       { "field": "residence_city", "operator": "equals", "value": "Taipei" },
-      { "field": "age", "operator": "gte", "value": 20 }
+      { "field": "age", "operator": "gte", "value": 18 }
     ]
   },
   "required_documents": [
@@ -20,8 +20,8 @@
     { "service_id": "rent_subsidy_central", "type": "choose_one", "reason": "同一租屋需求，承租社會住宅與租金補貼通常擇一。" }
   ],
   "source": {
-    "title": "臺北市政府都市發展局 - 社會住宅",
-    "url": "https://example.gov.tw/taipei/social-housing",
-    "last_checked_at": "2026-06-25"
+    "title": "臺北市政府 - 承租社會住宅資格",
+    "url": "https://www.gov.taipei/News_Content.aspx?n=EEC70A4186D4C828&s=ECE04E630293064E&sms=87415A8B9CE81B16",
+    "last_checked_at": "2026-06-26"
   }
 }

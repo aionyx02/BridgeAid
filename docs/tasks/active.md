@@ -2,7 +2,7 @@
 type: task_index
 status: active
 priority: p0
-updated: 2026-06-25
+updated: 2026-06-26
 context_policy: always_retrievable
 owner: project
 ---
@@ -13,7 +13,7 @@ owner: project
 
 ### TASK.001 - 題目收斂與 MVP 服務清單
 
-- Status: doing
+- Status: done
 - Priority: P0
 - Owner: shawn
 - Started: 2026-06-25
@@ -21,61 +21,101 @@ owner: project
   - `docs/project.md`
   - `docs/memory/current.md`
 - Acceptance criteria:
-  - [ ] 確認 MVP 主場景（急難救助 + 住宅/生活補助 + 邊緣戶提醒）。
-  - [ ] 選定 5–10 筆服務候選並標註官方來源 URL。
-  - [ ] 確認 Demo 地理範圍（1–2 縣市 + 中央）。
+  - [x] 確認 MVP 主場景（急難救助 + 住宅/生活補助 + 邊緣戶提醒）。
+  - [x] 選定 5–10 筆服務候選並標註官方來源 URL。
+  - [x] 確認 Demo 地理範圍（1–2 縣市 + 中央）。
 - Validation:
-  - [ ] `npm run docs:refresh`
+  - [x] `npm run docs:refresh`
 - Notes:
-  - 詳細服務整理放 `docs/data.md` 與後續 task 檔。
+  - 詳細服務整理見 `docs/data.md` 的 MVP Service Candidate Scope。
 
-### TASK.004 - 對話流程與欄位追問（Web /chat + LINE）
-
-- Status: review
-- Priority: P0
-- Owner: shawn
-- Started: 2026-06-25
-- Related docs:
-  - `docs/architecture.md`
-  - `docs/ui.md`
-  - `docs/data.md`
-- Acceptance criteria:
-  - [x] Session 狀態管理：保存已抽取欄位、追問次數（一次不超過 3 題）。
-  - [x] 依規則引擎缺失欄位動態追問，足夠後輸出推薦摘要（服務/文件/來源）。
-  - [x] `POST /chat` 對話端點可多輪運作；LINE webhook 事件接到同一流程。
-- Validation:
-  - [x] `uv run ruff check .`
-  - [x] `uv run pytest`（45 passed）
-- Notes:
-  - deterministic intent parser（關鍵字→欄位 token）；LLM adapter 為 port，之後接入（屆時另開 ADR：新增 LLM 依賴 + 金鑰 + 網路 egress）。
-  - Session 為 in-memory store；DB 持久化（`user_sessions`）為後續。
-  - 待真實 LINE 連線驗證 reply/push（需 channel access token + 公開 webhook URL）。
-
-### TASK.005 - 文件 checklist 彙整與衝突檢查整合（Week 5）
+### TASK.006 - 提醒系統（opt-in）與來源追溯（Week 6）
 
 - Status: done
 - Priority: P0
 - Owner: shawn
 - Started: 2026-06-25
 - Related docs:
+  - `docs/security.md`
   - `docs/data.md`
-  - `docs/ui.md`
+  - `docs/adr/0005-opt-in-reminder-system-and-source-trace-endpoints.md`
 - Acceptance criteria:
-  - [x] 推薦結果彙整跨服務文件 checklist（去重，標示哪些服務需要）。
-  - [x] 多個 possible 服務間做衝突檢查並回傳（choose_one/exclusive）。
-  - [x] `/recommend` 與 `/chat` 結果都含 `conflicts` 與 `document_checklist`。
+  - [x] 提醒需 opt-in（無 consent 拒絕 403）；可建立/列出/取消，最小化欄位。
+  - [x] `reminder_type`/`channel`/`scheduled_at` 驗證（422）；取消需 session 擁有權（404）。
+  - [x] 來源追溯端點：`GET /services` 與 `GET /services/{id}/source`（含 version/needs_review/last_checked_at）。
 - Validation:
   - [x] `uv run ruff check .`
-  - [x] `uv run pytest`（50 passed）
+  - [x] `uv run pytest`（65 passed）
 - Notes:
-  - 新增 `app.recommendation`，重用 rule_engine 既有 `build_document_checklist` 與 `detect_conflicts`。
+  - 提醒先 in-memory（`ReminderStore` port）；DB（`reminder_tasks`）與實際送達（排程）為後續。
+
+### TASK.007 - Demo 情境回歸測試（Week 7）
+
+- Status: done
+- Priority: P0
+- Owner: shawn
+- Started: 2026-06-26
+- Related docs:
+  - `docs/testing.md`
+  - `docs/data.md`
+- Acceptance criteria:
+  - [x] 建立 10–20 組 demo 情境 fixture，涵蓋急難、租屋、低收入、長照、失業與衝突提示。
+  - [x] 回歸測試確認 deterministic parser 抽取關鍵欄位，rule engine 推薦預期服務。
+  - [x] 每組可能推薦結果皆保留來源追溯，不輸出不存在的服務 ID。
+- Validation:
+  - [x] `uv run ruff check .`
+  - [x] `uv run pytest`（91 passed）
+  - [x] `npm run docs:refresh`
+- Notes:
+  - 12 組情境 fixture 位於 `tests/fixtures/demo_scenarios.json`；不接外部 LLM、不新增網路或排程依賴。
+
+### TASK.008 - MVP 服務資料準確性稽核
+
+- Status: done
+- Priority: P0
+- Owner: shawn
+- Started: 2026-06-26
+- Related docs:
+  - `docs/data.md`
+  - `docs/testing.md`
+- Acceptance criteria:
+  - [x] 重新核對 6 筆服務的官方來源與核心資格摘要。
+  - [x] 修正明顯過寬或過舊的 demo 規則。
+  - [x] 對仍需人工政策審核的服務保留 `needs_review`。
+- Validation:
+  - [x] `uv run ruff check .`
+  - [x] `uv run pytest`（91 passed）
+  - [x] `npm run docs:refresh`
+- Notes:
+  - 修正租金補貼來源、社宅成年年齡、急難救助事件條件、長照 care_need 條件。
+
+### TASK.009 - Web Demo Shell（無新增依賴）
+
+- Status: done
+- Priority: P0
+- Owner: shawn
+- Started: 2026-06-26
+- Related docs:
+  - `docs/ui.md`
+  - `docs/accessibility.md`
+  - `docs/html-guidelines.md`
+- Acceptance criteria:
+  - [x] FastAPI 可於 `/demo/` serve Web demo，不需新增 Node 或前端依賴。
+  - [x] Demo 可呼叫 `/chat`、`/services/{id}/source`、`/reminders`，展示推薦、文件 checklist、來源追溯與 opt-in 提醒。
+  - [x] UI 使用語意化 HTML、鍵盤可操作表單與可見 focus。
+- Validation:
+  - [x] `uv run ruff check .`
+  - [x] `uv run pytest`（93 passed）
+  - [x] `npm run docs:refresh`
+- Notes:
+  - 靜態檔位於 `demo/`；本機服務 URL：`http://127.0.0.1:8000/demo/`。
 
 ## Strategy
 
-Keep `active.md` compact. Every active task must include an `Owner` from `docs/team/members.md`. Use `project` only for placeholder or unassigned setup work; `doing` tasks should be assigned to a real member. Put task-level details in dedicated `docs/tasks/*.md`, detailed implementation notes in per-member session logs, and future ideas in `docs/tasks/backlog.md`.
+Keep `active.md` compact. Every active task must include an `Owner` from `docs/team/members.md`. Use `project` only for placeholder or unassigned setup work; `doing` tasks should be assigned to a real member. Put task-level details in dedicated `docs/tasks/*.md`, detailed implementation notes in per-member session logs, and future ideas in `docs/tasks/backlog.md`. 已完成任務見 `docs/tasks/completed.md`。
 
 ## Next Phase Candidates
 
-- LINE/Web 對話流程與 session 欄位追問（Week 4）。
-- 文件 checklist 與衝突檢查（Week 5）。
-- 提醒系統與來源追溯 UI（Week 6）。
+- 提醒實際送達（Redis/Celery + LINE/Email）。
+- 接入本地 Ollama intent parser（ADR-0004）。
+- Demo 打磨與 10–20 組測試情境（Week 7）。

@@ -4,11 +4,10 @@
   "category": "long_term_care",
   "jurisdiction": "central",
   "area": { "type": "nationwide" },
-  "status": "active",
+  "status": "needs_review",
   "version": "2026.06",
   "eligibility_rules": {
-    "any": [
-      { "field": "caregiver", "operator": "equals", "value": true },
+    "all": [
       { "field": "care_need", "operator": "equals", "value": true }
     ]
   },
@@ -18,8 +17,8 @@
   ],
   "conflicts": [],
   "source": {
-    "title": "衛生福利部 - 長照 2.0 專區",
-    "url": "https://example.gov.tw/central/long-term-care",
-    "last_checked_at": "2026-06-25"
+    "title": "衛福部長照專區（1966）- 申請長照服務",
+    "url": "https://1966.gov.tw/LTC/cp-6533-70777-207.html",
+    "last_checked_at": "2026-06-26"
   }
 }

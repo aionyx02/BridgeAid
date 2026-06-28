@@ -1,0 +1,26 @@
+{
+  "id": "low_income_living_taipei",
+  "name": "臺北市低收入戶生活補助",
+  "category": "other",
+  "jurisdiction": "local",
+  "area": { "type": "city", "value": "Taipei" },
+  "status": "active",
+  "version": "2026.06",
+  "eligibility_rules": {
+    "all": [
+      { "field": "residence_city", "operator": "equals", "value": "Taipei" },
+      { "field": "income_status", "operator": "equals", "value": "low_income" }
+    ]
+  },
+  "required_documents": [
+    { "name": "身分證明文件", "condition": "always" },
+    { "name": "臺北市社會扶助申請表", "condition": "always" },
+    { "name": "收入及財產證明", "condition": "always" }
+  ],
+  "conflicts": [],
+  "source": {
+    "title": "臺北市政府社會局 - 低收入戶生活補助（含年節慰問金）",
+    "url": "https://dosw.gov.taipei/cp.aspx?n=E6D700BD37E78592",
+    "last_checked_at": "2026-06-26"
+  }
+}

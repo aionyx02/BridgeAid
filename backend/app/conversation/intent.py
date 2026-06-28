@@ -25,7 +25,7 @@ _CITY_KEYWORDS: list[tuple[tuple[str, ...], str]] = [
 ]
 
 _EVENT_KEYWORDS: list[tuple[tuple[str, ...], str]] = [
-    (("失業", "沒工作", "沒了工作", "被裁", "資遣", "丟了工作"), "unemployment"),
+    (("失業", "沒工作", "沒有工作", "沒了工作", "被裁", "資遣", "丟了工作"), "unemployment"),
     (("生病", "住院", "傷病", "開刀", "重病", "罹病"), "illness"),
     (("火災", "失火", "火燒"), "fire"),
     (("車禍", "重大事故", "意外事故"), "major_accident"),
@@ -33,9 +33,10 @@ _EVENT_KEYWORDS: list[tuple[tuple[str, ...], str]] = [
 ]
 
 _INCOME_KEYWORDS: list[tuple[tuple[str, ...], str]] = [
-    (("低收入戶", "低收"), "low_income"),
     (("中低收入", "中低收"), "mid_low_income"),
+    (("低收入戶", "低收"), "low_income"),
     (("邊緣戶",), "near_threshold"),
+    (("收入一般", "一般家庭", "一般戶"), "general"),
 ]
 
 _LEASE_KEYWORDS = ("租屋", "房租", "租金", "租約", "房東", "承租", "租房")

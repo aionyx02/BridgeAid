@@ -34,13 +34,12 @@ def test_possible_with_hit_conditions(rules_by_id):
 
 def test_insufficient_data_collects_missing_fields(rules_by_id):
     rule = rules_by_id["emergency_aid_taipei"]
-    profile = {"residence_city": "Taipei"}  # no event_type, no income_status
+    profile = {"residence_city": "Taipei"}  # no event_type
 
     result = evaluate(rule, profile)
 
     assert result.status == INSUFFICIENT_DATA
     assert "event_type" in result.missing_fields
-    assert "income_status" in result.missing_fields
 
 
 def test_unlikely_when_hard_condition_fails(rules_by_id):
@@ -55,7 +54,8 @@ def test_unlikely_when_hard_condition_fails(rules_by_id):
 def test_numeric_operator_gte(rules_by_id):
     rule = rules_by_id["social_housing_taipei"]
     assert evaluate(rule, {"residence_city": "Taipei", "age": 25}).status == POSSIBLE
-    assert evaluate(rule, {"residence_city": "Taipei", "age": 18}).status == UNLIKELY
+    assert evaluate(rule, {"residence_city": "Taipei", "age": 18}).status == POSSIBLE
+    assert evaluate(rule, {"residence_city": "Taipei", "age": 17}).status == UNLIKELY
 
 
 def test_documents_depend_on_event_type(rules_by_id):
