@@ -9,12 +9,7 @@
   "eligibility_rules": {
     "all": [
       { "field": "residence_city", "operator": "equals", "value": "Taipei" },
-      {
-        "any": [
-          { "field": "event_type", "operator": "in", "value": ["unemployment", "illness", "fire", "major_accident", "death_in_family"] },
-          { "field": "income_status", "operator": "in", "value": ["low_income", "mid_low_income", "near_threshold"] }
-        ]
-      }
+      { "field": "event_type", "operator": "in", "value": ["unemployment", "illness", "fire", "major_accident", "death_in_family"] }
     ]
   },
   "required_documents": [
@@ -25,7 +20,7 @@
   "conflicts": [],
   "source": {
     "title": "臺北市政府社會局 - 急難救助",
-    "url": "https://example.gov.tw/taipei/emergency-aid",
-    "last_checked_at": "2026-06-25"
+    "url": "https://dosw.gov.taipei/cp.aspx?n=0BF751F1B9F07AA1",
+    "last_checked_at": "2026-06-26"
   }
 }

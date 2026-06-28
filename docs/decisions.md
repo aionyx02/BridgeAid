@@ -18,3 +18,4 @@ owner: project
 | `0002` | accepted | ADR-0002: BridgeAid initial architecture and AI boundary |
 | `0003` | accepted | ADR-0003: Backend skeleton: persistence, secrets, and API surface |
 | `0004` | proposed | ADR-0004: LLM intent parser via local Ollama |
+| `0005` | proposed | ADR-0005: Opt-in reminder system and source-trace endpoints |

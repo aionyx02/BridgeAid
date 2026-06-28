@@ -6,12 +6,11 @@ updated: 2026-06-25
 context_policy: on_demand
 owner: project
 ---
-
 # ADR-0004: LLM intent parser via local Ollama
 
 ## Status
 
-Proposed
+accepted
 
 （記錄方向；尚未實作。maintainer 確認後才 accepted 並實作，依 docs/CLAUDE.md §3。）
 
@@ -47,11 +46,12 @@ TASK.004 的 intent parser 目前是 deterministic 關鍵字版（`IntentParser`
 
 ## Alternatives Considered
 
-| Option | Pros | Cons | Reason not chosen |
-|---|---|---|---|
-| 雲端 LLM API | 品質高、免本機資源 | 個資外送、成本、需金鑰 | 個資敏感，先本地 |
-| 純 deterministic | 簡單、可測 | 口語/同義覆蓋不足 | 作為 fallback 保留 |
-| 本地 Ollama | 個資不外送、可離線 | 需本機資源 | 採用方向 |
+
+| Option           | Pros               | Cons                   | Reason not chosen  |
+| ---------------- | ------------------ | ---------------------- | ------------------ |
+| 雲端 LLM API     | 品質高、免本機資源 | 個資外送、成本、需金鑰 | 個資敏感，先本地   |
+| 純 deterministic | 簡單、可測         | 口語/同義覆蓋不足      | 作為 fallback 保留 |
+| 本地 Ollama      | 個資不外送、可離線 | 需本機資源             | 採用方向           |
 
 ## Security Review
 

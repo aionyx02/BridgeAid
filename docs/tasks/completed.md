@@ -2,7 +2,7 @@
 type: task_archive_index
 status: archive
 priority: p3
-updated: 2026-06-25
+updated: 2026-06-26
 context_policy: on_demand
 owner: project
 ---
@@ -18,3 +18,8 @@ owner: project
 | `TASK.003` | 後端骨架（FastAPI + schema.sql + importer + LINE 驗章 + keychain）；ADR-0003 accepted；live DB 實跑列 backlog | `docs/memory/sessions/2026-06-25-shawn.md` |
 | `TASK.004` | 對話流程與欄位追問（/chat + LINE webhook，deterministic parser，45 tests 全綠）；live LINE reply 驗證列 backlog | `docs/memory/sessions/2026-06-25-shawn.md` |
 | `TASK.005` | 文件 checklist 彙整與衝突檢查整合進 /recommend 與 /chat（app.recommendation，50 tests 全綠） | `docs/memory/sessions/2026-06-25-shawn.md` |
+| `TASK.006` | 提醒系統（opt-in）與來源追溯端點（app.reminders + /services source，65 tests 全綠） | `docs/memory/sessions/2026-06-25-shawn.md` |
+| `TASK.001` | 題目收斂與 MVP 服務清單 | `docs/memory/sessions/2026-06-26-shawn.md` |
+| `TASK.007` | Demo 情境回歸測試（Week 7） | `docs/memory/sessions/2026-06-26-shawn.md` |
+| `TASK.008` | MVP 服務資料準確性稽核 | `docs/memory/sessions/2026-06-26-shawn.md` |
+| `TASK.009` | Web Demo Shell（無新增依賴） | `docs/memory/sessions/2026-06-26-shawn.md` |

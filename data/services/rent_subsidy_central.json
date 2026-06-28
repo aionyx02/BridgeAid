@@ -4,7 +4,7 @@
   "category": "housing",
   "jurisdiction": "central",
   "area": { "type": "nationwide" },
-  "status": "active",
+  "status": "needs_review",
   "version": "2026.06",
   "eligibility_rules": {
     "all": [
@@ -21,8 +21,8 @@
     { "service_id": "social_housing_taipei", "type": "choose_one", "reason": "同一租屋需求，租金補貼與承租社會住宅通常擇一。" }
   ],
   "source": {
-    "title": "內政部 - 住宅補貼（租金補貼）",
-    "url": "https://example.gov.tw/central/rent-subsidy",
-    "last_checked_at": "2026-06-25"
+    "title": "內政部國土管理署 - 115年300億元中央擴大租金補貼受理申請公告",
+    "url": "https://www.nlma.gov.tw/ch/legislation/law%26regunu/7243",
+    "last_checked_at": "2026-06-26"
   }
 }

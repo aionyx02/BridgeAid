@@ -15,6 +15,13 @@ def test_at_least_five_rules_present_and_valid():
     assert len(ids) == len(set(ids)), "service ids must be unique"
 
 
+def test_shipped_rules_use_traceable_non_placeholder_sources():
+    for rule in load_rules():
+        url = rule["source"]["url"]
+        assert url.startswith("https://")
+        assert "example.gov.tw" not in url
+
+
 def test_every_shipped_rule_validates():
     for path in SERVICES_DIR.glob("*.json"):
         # load_rules already validates; this asserts each file individually

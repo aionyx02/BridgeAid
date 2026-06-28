@@ -1,0 +1,181 @@
+[
+  {
+    "id": "taipei_unemployed_renter_near_threshold",
+    "message": "我住臺北，今年40歲，最近失業，有保勞保，房租快繳不出來，有租約，是邊緣戶",
+    "expected_profile": {
+      "residence_city": "Taipei",
+      "age": 40,
+      "event_type": "unemployment",
+      "employment_insured": true,
+      "has_lease": true,
+      "income_status": "near_threshold"
+    },
+    "expected_possible": [
+      "emergency_aid_taipei",
+      "rent_subsidy_central",
+      "social_housing_taipei",
+      "unemployment_assistance_central"
+    ],
+    "expected_needs_review": ["unemployment_assistance_central"],
+    "expected_conflicts": [["rent_subsidy_central", "social_housing_taipei"]]
+  },
+  {
+    "id": "taipei_low_income_hospital_caregiver",
+    "message": "我住台北，今年45歲，是低收入戶，爸爸住院失能，需要我照顧",
+    "expected_profile": {
+      "residence_city": "Taipei",
+      "age": 45,
+      "event_type": "illness",
+      "income_status": "low_income",
+      "care_need": true,
+      "caregiver": true
+    },
+    "expected_possible": [
+      "emergency_aid_taipei",
+      "long_term_care_central",
+      "low_income_living_taipei",
+      "social_housing_taipei"
+    ],
+    "expected_needs_review": [],
+    "expected_conflicts": []
+  },
+  {
+    "id": "taipei_fire_mid_low_income",
+    "message": "我住臺北，家裡火災，是中低收入戶",
+    "expected_profile": {
+      "residence_city": "Taipei",
+      "event_type": "fire",
+      "income_status": "mid_low_income"
+    },
+    "expected_possible": ["emergency_aid_taipei"],
+    "expected_needs_review": [],
+    "expected_conflicts": []
+  },
+  {
+    "id": "kaohsiung_unemployment_insured_renter",
+    "message": "我住高雄，今年35歲，失業前有保勞保，租屋有租約，收入一般",
+    "expected_profile": {
+      "residence_city": "Kaohsiung",
+      "age": 35,
+      "event_type": "unemployment",
+      "employment_insured": true,
+      "has_lease": true,
+      "income_status": "general"
+    },
+    "expected_possible": [
+      "rent_subsidy_central",
+      "unemployment_assistance_central"
+    ],
+    "expected_needs_review": ["unemployment_assistance_central"],
+    "expected_conflicts": []
+  },
+  {
+    "id": "taipei_general_renter_social_housing_conflict",
+    "message": "我住臺北，今年28歲，租屋有租約，收入一般",
+    "expected_profile": {
+      "residence_city": "Taipei",
+      "age": 28,
+      "has_lease": true,
+      "income_status": "general"
+    },
+    "expected_possible": ["rent_subsidy_central", "social_housing_taipei"],
+    "expected_needs_review": [],
+    "expected_conflicts": [["rent_subsidy_central", "social_housing_taipei"]]
+  },
+  {
+    "id": "central_long_term_care_need",
+    "message": "媽媽失智臥床，有長照需求，我正在照顧她",
+    "expected_profile": {
+      "care_need": true,
+      "caregiver": true
+    },
+    "expected_possible": ["long_term_care_central"],
+    "expected_needs_review": [],
+    "expected_conflicts": []
+  },
+  {
+    "id": "taipei_low_income_renter",
+    "message": "我住臺北，今年22歲，低收入戶，房租快繳不出來，有租約",
+    "expected_profile": {
+      "residence_city": "Taipei",
+      "age": 22,
+      "has_lease": true,
+      "income_status": "low_income"
+    },
+    "expected_possible": [
+      "low_income_living_taipei",
+      "rent_subsidy_central",
+      "social_housing_taipei"
+    ],
+    "expected_needs_review": [],
+    "expected_conflicts": [["rent_subsidy_central", "social_housing_taipei"]]
+  },
+  {
+    "id": "taipei_major_accident_near_threshold",
+    "message": "我住臺北，哥哥車禍重大事故，家裡是邊緣戶",
+    "expected_profile": {
+      "residence_city": "Taipei",
+      "event_type": "major_accident",
+      "income_status": "near_threshold"
+    },
+    "expected_possible": ["emergency_aid_taipei"],
+    "expected_needs_review": [],
+    "expected_conflicts": []
+  },
+  {
+    "id": "taipei_death_mid_low_income",
+    "message": "我住台北，家人過世，收入是中低收入戶",
+    "expected_profile": {
+      "residence_city": "Taipei",
+      "event_type": "death_in_family",
+      "income_status": "mid_low_income"
+    },
+    "expected_possible": ["emergency_aid_taipei"],
+    "expected_needs_review": [],
+    "expected_conflicts": []
+  },
+  {
+    "id": "kaohsiung_hospital_caregiver",
+    "message": "我住高雄，爸爸住院失能，需要我照顧",
+    "expected_profile": {
+      "residence_city": "Kaohsiung",
+      "event_type": "illness",
+      "care_need": true,
+      "caregiver": true
+    },
+    "expected_possible": ["long_term_care_central"],
+    "expected_needs_review": [],
+    "expected_conflicts": []
+  },
+  {
+    "id": "taipei_unemployed_renter_unknown_insurance",
+    "message": "我住台北，今年50歲，沒有工作，租房，是邊緣戶",
+    "expected_profile": {
+      "residence_city": "Taipei",
+      "age": 50,
+      "event_type": "unemployment",
+      "has_lease": true,
+      "income_status": "near_threshold"
+    },
+    "expected_possible": [
+      "emergency_aid_taipei",
+      "rent_subsidy_central",
+      "social_housing_taipei"
+    ],
+    "expected_needs_review": [],
+    "expected_conflicts": [["rent_subsidy_central", "social_housing_taipei"]]
+  },
+  {
+    "id": "taipei_underage_renter",
+    "message": "我住臺北，今年19歲，租屋有租約，收入一般",
+    "expected_profile": {
+      "residence_city": "Taipei",
+      "age": 19,
+      "has_lease": true,
+      "income_status": "general"
+    },
+    "expected_possible": ["rent_subsidy_central", "social_housing_taipei"],
+    "expected_needs_review": [],
+    "expected_conflicts": [["rent_subsidy_central", "social_housing_taipei"]]
+  }
+]

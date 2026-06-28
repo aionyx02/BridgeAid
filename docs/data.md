@@ -13,6 +13,10 @@ owner: project
 
 定義 BridgeAid 的持久化資料形狀、規則格式與版本/來源規則。臨時除錯輸出不放這裡。
 
+## MVP Scope
+
+臺北市 + 中央，6 筆候選規則見 `data/services/*.json`；官方 URL 在 `source.url`。
+
 ## 中介格式策略
 
 服務規則以 JSON/YAML 作為「中介格式」（適合版控、人工審核、黑客松快速修改），經 JSON Schema 驗證後匯入 PostgreSQL（適合查詢、session、提醒、版本管理）。不可只用 JSON 檔當正式資料庫。
@@ -40,6 +44,11 @@ owner: project
 | `GET /healthz` | — | `{status, rules_loaded, line_configured, db_configured}` | — |
 | `POST /recommend` | `{profile: {...}}` | `{results: [{service_id, service_name, status, hit_conditions, missing_fields, documents, needs_review, source}], conflicts: [{service_ids, type, reason}], document_checklist: [{document, services}]}` | 422 (驗證) |
 | `POST /chat` | `{session_id, message}` | `{kind: "question"\|"result", text, options[], results[], conflicts[], document_checklist[]}` | 422 (驗證) |
+| `POST /reminders` | `{session_id, reminder_type, scheduled_at, channel, consent, note?}` | `{id, session_id, reminder_type, scheduled_at, channel, status, note}` | 403（無 consent）/ 422（驗證） |
+| `GET /reminders/{session_id}` | — | `{reminders: [...]}` | — |
+| `DELETE /reminders/{id}?session_id=` | — | 取消後的 reminder | 404（非該 session 擁有） |
+| `GET /services` | — | `{services: [{service_id, name, category, status, needs_review}]}` | — |
+| `GET /services/{id}/source` | — | `{service_id, service_name, version, status, needs_review, source}` | 404 |
 | `POST /line/webhook` | raw body + `X-Line-Signature` | `{status: "ok"}` | 401（簽章錯）/ 503（未設定 secret） |
 | `rule_engine.evaluate_all()` | rules, profile | `Evaluation[]`（possible/insufficient_data/unlikely） | — |
 

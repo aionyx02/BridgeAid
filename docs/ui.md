@@ -37,6 +37,10 @@ owner: project
 
 前端依 `kind` 切換「追問氣泡 + quick-reply 按鈕」或「推薦清單卡片 + 合併文件 checklist + 擇一提示」。LINE 端由 webhook 走同一流程，`options` 轉為 LINE quick reply。
 
+來源透明化（畫面 5）讀 `GET /services/{id}/source`（官方來源、版本、最後檢查日期、`needs_review`）。建立提醒（畫面 6）走 `POST /reminders`，**需使用者明確 opt-in（consent）**；可 `GET /reminders/{session_id}` 列出、`DELETE` 取消。
+
+TASK.009 先以無新增依賴的靜態 shell 落地於 `/demo/`（檔案在 `demo/`），供本機 FastAPI demo 使用；正式 Next.js 前端另行評估。
+
 ## Component Boundary Rules
 
 - 一個元件一個清楚責任。
