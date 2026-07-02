@@ -32,6 +32,12 @@ LINE_CHANNEL_SECRET = "LINE_CHANNEL_SECRET"
 LINE_CHANNEL_ACCESS_TOKEN = "LINE_CHANNEL_ACCESS_TOKEN"
 DATABASE_URL = "DATABASE_URL"
 
+# Intent parser selection (ADR-0004). Not secrets, but resolved through the
+# same keychain/env lookup so local overrides need no shell profile edits.
+INTENT_PARSER = "INTENT_PARSER"  # "ollama" to enable the LLM parser
+OLLAMA_HOST = "OLLAMA_HOST"  # default http://localhost:11434
+OLLAMA_MODEL = "OLLAMA_MODEL"
+
 
 def get_secret(name: str) -> str | None:
     """Return a secret by key: OS keychain first, then environment variable.
@@ -56,6 +62,9 @@ class Settings:
     line_channel_secret: str | None
     line_channel_access_token: str | None
     database_url: str | None
+    intent_parser: str | None = None
+    ollama_host: str | None = None
+    ollama_model: str | None = None
 
     @property
     def line_configured(self) -> bool:
@@ -71,6 +80,11 @@ class Settings:
     def db_configured(self) -> bool:
         return bool(self.database_url)
 
+    @property
+    def ollama_intent_enabled(self) -> bool:
+        """LLM parser is opt-in; anything else means deterministic (ADR-0004)."""
+        return (self.intent_parser or "").strip().lower() == "ollama"
+
 
 def load_settings() -> Settings:
     """Resolve settings from keychain/env. Cheap; call per request to pick up changes."""
@@ -79,4 +93,7 @@ def load_settings() -> Settings:
         line_channel_secret=get_secret(LINE_CHANNEL_SECRET),
         line_channel_access_token=get_secret(LINE_CHANNEL_ACCESS_TOKEN),
         database_url=get_secret(DATABASE_URL),
+        intent_parser=get_secret(INTENT_PARSER),
+        ollama_host=get_secret(OLLAMA_HOST),
+        ollama_model=get_secret(OLLAMA_MODEL),
     )

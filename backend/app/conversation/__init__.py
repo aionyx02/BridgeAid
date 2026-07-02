@@ -4,7 +4,8 @@ AI is the entry/translation layer (ADR-0002): this package extracts profile
 fields from natural language and drives follow-up questions, but eligibility is
 always decided by the rule engine. The intent parser is a port
 (`IntentParser`); the default is deterministic (keyword-based, no LLM/key), and
-an LLM adapter can be swapped in later.
+`OllamaIntentParser` (ADR-0004) is the opt-in local-LLM adapter with
+deterministic fallback.
 """
 
 from .intent import DeterministicIntentParser, IntentParser
@@ -16,10 +17,13 @@ from .manager import (
     Session,
     SessionStore,
 )
+from .ollama_intent import OllamaIntentParser, build_intent_parser
 
 __all__ = [
     "IntentParser",
     "DeterministicIntentParser",
+    "OllamaIntentParser",
+    "build_intent_parser",
     "ConversationManager",
     "InMemorySessionStore",
     "SessionStore",

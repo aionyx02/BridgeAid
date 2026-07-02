@@ -67,6 +67,7 @@
 
         <section class="panel" aria-labelledby="reminderTitle">
           <h2 id="reminderTitle">提醒</h2>
+          <p class="meta">提醒為 opt-in；到期後由系統送達（未接 LINE 時以狀態「已送達」模擬）。</p>
           <form id="reminderForm" class="reminder-form">
             <label for="reminderType">類型</label>
             <select id="reminderType" name="reminder_type">
@@ -105,7 +106,7 @@
       <article class="dialog-body">
         <div class="panel-heading">
           <h2 id="dialogTitle">來源</h2>
-          <button type="button" class="icon-button" id="closeDialog" aria-label="關閉">x</button>
+          <button type="button" class="icon-button" id="closeDialog" aria-label="關閉">✕</button>
         </div>
         <div id="sourceDetail"></div>
       </article>

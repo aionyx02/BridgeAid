@@ -1,0 +1,28 @@
+# Local development database (matches the hackathon deployment target).
+#   docker compose up -d
+# First boot applies db/schema.sql automatically (initdb.d). Connection URL:
+#   postgresql://bridgeaid:<password>@127.0.0.1:5432/bridgeaid
+# Store it via:  uv run keyring set bridgeaid DATABASE_URL
+# The API keeps running without a DB (degraded mode, ADR-0003).
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: bridgeaid-postgres
+    environment:
+      POSTGRES_DB: bridgeaid
+      POSTGRES_USER: bridgeaid
+      # Local-only default; override with BRIDGEAID_DB_PASSWORD for anything shared.
+      POSTGRES_PASSWORD: ${BRIDGEAID_DB_PASSWORD:-bridgeaid-local-dev}
+    ports:
+      - "127.0.0.1:5432:5432"  # never exposed beyond localhost
+    volumes:
+      - bridgeaid_pgdata:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bridgeaid -d bridgeaid"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  bridgeaid_pgdata:

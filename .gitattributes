@@ -1,0 +1,3 @@
+# Node docs guards require LF in the working tree (scripts/docs-utils.mjs
+# parses frontmatter byte-exactly). Keep every text file LF on all platforms.
+* text=auto eol=lf

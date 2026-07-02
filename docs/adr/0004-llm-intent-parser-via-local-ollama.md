@@ -1,8 +1,8 @@
 ---
 type: adr
-status: proposed
+status: accepted
 priority: p1
-updated: 2026-06-25
+updated: 2026-07-02
 context_policy: on_demand
 owner: project
 ---
@@ -12,7 +12,7 @@ owner: project
 
 accepted
 
-（記錄方向；尚未實作。maintainer 確認後才 accepted 並實作，依 docs/CLAUDE.md §3。）
+（maintainer 已於 2026-07-02 確認接受，依 docs/CLAUDE.md §3。）
 
 ## Context
 

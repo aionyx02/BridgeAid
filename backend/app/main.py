@@ -11,7 +11,10 @@ Local daemon:  ``uv run uvicorn app.main:app --reload``
 
 from __future__ import annotations
 
+import asyncio
+import contextlib
 import json
+from collections.abc import AsyncIterator
 from dataclasses import asdict
 from functools import lru_cache
 from pathlib import Path
@@ -22,20 +25,37 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from . import config
-from .conversation import ConversationManager, InMemorySessionStore
+from .conversation import ConversationManager, InMemorySessionStore, build_intent_parser
 from .line.client import build_reply_client
 from .line.webhook import verify_signature
 from .recommendation import build_recommendation
+from .reminder_delivery import LineOrLogSender, run_scheduler
 from .reminders import ConsentRequiredError, InMemoryReminderStore, ReminderService
 from .rule_engine import evaluate_all, load_rules
 
-app = FastAPI(title="BridgeAid", summary="Proactive Public Service Navigator")
+_session_store = InMemorySessionStore()
+_reminder_store = InMemoryReminderStore()
+_reminders = ReminderService(_reminder_store)
+reply_client = build_reply_client()
+
+
+@contextlib.asynccontextmanager
+async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Run the reminder delivery sweep for the app's lifetime (ADR-0006)."""
+    scheduler = asyncio.create_task(run_scheduler(_reminder_store, LineOrLogSender()))
+    try:
+        yield
+    finally:
+        scheduler.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await scheduler
+
+
+app = FastAPI(
+    title="BridgeAid", summary="Proactive Public Service Navigator", lifespan=_lifespan
+)
 DEMO_DIR = Path(__file__).resolve().parents[2] / "demo"
 app.mount("/demo", StaticFiles(directory=DEMO_DIR, html=True), name="demo")
-
-_session_store = InMemorySessionStore()
-_reminders = ReminderService(InMemoryReminderStore())
-reply_client = build_reply_client()
 
 
 @lru_cache(maxsize=1)
@@ -51,7 +71,9 @@ def _rules_by_id() -> dict[str, dict[str, Any]]:
 
 @lru_cache(maxsize=1)
 def _manager() -> ConversationManager:
-    return ConversationManager(_rules(), _session_store)
+    # Parser choice (deterministic vs Ollama, ADR-0004) is fixed at first use.
+    parser = build_intent_parser(config.load_settings())
+    return ConversationManager(_rules(), _session_store, parser=parser)
 
 
 class RecommendRequest(BaseModel):

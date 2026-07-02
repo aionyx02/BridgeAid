@@ -1,8 +1,8 @@
 ---
 type: adr
-status: proposed
+status: accepted
 priority: p1
-updated: 2026-06-25
+updated: 2026-07-02
 context_policy: on_demand
 owner: project
 ---
@@ -12,7 +12,7 @@ owner: project
 
 accepted
 
-（記錄方向；maintainer 確認後才 accepted，依 docs/CLAUDE.md §3。提醒涉及個資/同意邊界與對外 API 契約。）
+（maintainer 已於 2026-07-02 確認接受，依 docs/CLAUDE.md §3。提醒涉及個資/同意邊界與對外 API 契約。實際送達機制改走輕量 in-process 排程，見 ADR-0006。）
 
 ## Context
 

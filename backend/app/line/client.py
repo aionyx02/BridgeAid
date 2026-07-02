@@ -15,6 +15,17 @@ import httpx
 from ..conversation import Reply
 
 REPLY_URL = "https://api.line.me/v2/bot/message/reply"
+PUSH_URL = "https://api.line.me/v2/bot/message/push"
+
+
+def push_text(access_token: str, to: str, text: str) -> None:
+    """Push a plain text message to a LINE user (reminder delivery, ADR-0006)."""
+    httpx.post(
+        PUSH_URL,
+        headers={"Authorization": f"Bearer {access_token}"},
+        json={"to": to, "messages": [{"type": "text", "text": text}]},
+        timeout=10.0,
+    ).raise_for_status()
 
 
 def reply_to_messages(reply: Reply) -> list[dict[str, Any]]:

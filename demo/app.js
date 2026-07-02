@@ -4,6 +4,20 @@ const state = {
   lastReply: null,
 };
 
+const REMINDER_TYPE_LABELS = {
+  document: "補件",
+  deadline: "期限",
+  renewal: "續辦",
+  eligibility: "即將符合",
+};
+const REMINDER_STATUS_LABELS = {
+  pending: "待送達",
+  sent: "已送達",
+  cancelled: "已取消",
+};
+const CHANNEL_LABELS = { line: "LINE", email: "Email" };
+const CONFLICT_TYPE_LABELS = { mutually_exclusive: "可能需擇一申請" };
+
 const els = {
   apiStatus: document.querySelector("#apiStatus"),
   sessionLabel: document.querySelector("#sessionLabel"),
@@ -95,6 +109,7 @@ async function submitChat(text) {
   addMessage("user", message);
   els.messageInput.value = "";
   renderQuickReplies([]);
+  setChatBusy(true);
 
   try {
     const reply = await request("/chat", {
@@ -110,7 +125,15 @@ async function submitChat(text) {
     renderResults(reply);
   } catch (error) {
     addMessage("assistant", `暫時無法取得回覆：${error.message}`);
+  } finally {
+    setChatBusy(false);
   }
+}
+
+function setChatBusy(busy) {
+  const submit = els.chatForm.querySelector('button[type="submit"]');
+  submit.disabled = busy;
+  submit.textContent = busy ? "思考中…" : "送出";
 }
 
 function renderResults(reply) {
@@ -129,9 +152,14 @@ function renderConflicts(conflicts) {
     return;
   }
   els.conflicts.hidden = false;
+  const nameById = new Map(
+    (state.lastReply?.results || []).map((service) => [service.service_id, service.service_name]),
+  );
   const items = conflicts.map((conflict) => {
     const row = document.createElement("p");
-    row.textContent = `${conflict.type}: ${conflict.service_ids.join(" / ")} - ${conflict.reason}`;
+    const label = CONFLICT_TYPE_LABELS[conflict.type] || conflict.type;
+    const names = conflict.service_ids.map((id) => nameById.get(id) || id).join("、");
+    row.textContent = `${label}：${names}。${conflict.reason}`;
     return row;
   });
   els.conflicts.replaceChildren(...items);
@@ -277,28 +305,45 @@ function setDefaultReminderTime() {
   els.scheduledAt.value = local;
 }
 
+function formatScheduledAt(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  return date.toLocaleString("zh-TW", { dateStyle: "medium", timeStyle: "short" });
+}
+
 async function loadReminders() {
   try {
     const body = await request(`/reminders/${state.sessionId}`);
     if (!body.reminders.length) {
-      els.reminderList.textContent = "";
+      els.reminderList.className = "reminder-list empty-state";
+      els.reminderList.textContent = "此 session 尚無提醒";
       return;
     }
+    els.reminderList.className = "reminder-list";
     els.reminderList.replaceChildren(
       ...body.reminders.map((reminder) => {
         const row = document.createElement("article");
         row.className = "reminder-row";
         const summary = document.createElement("strong");
-        summary.textContent = `${reminder.reminder_type} / ${reminder.channel}`;
+        const typeLabel = REMINDER_TYPE_LABELS[reminder.reminder_type] || reminder.reminder_type;
+        summary.textContent = `${typeLabel}提醒 · ${CHANNEL_LABELS[reminder.channel] || reminder.channel}`;
+        const badge = document.createElement("span");
+        badge.className = `badge status-${reminder.status}`;
+        badge.textContent = REMINDER_STATUS_LABELS[reminder.status] || reminder.status;
         const meta = document.createElement("p");
         meta.className = "meta";
-        meta.textContent = `${reminder.scheduled_at} / ${reminder.status}`;
+        meta.textContent = formatScheduledAt(reminder.scheduled_at);
+        if (reminder.note) {
+          meta.textContent += ` · ${reminder.note}`;
+        }
         const cancel = document.createElement("button");
         cancel.type = "button";
         cancel.textContent = "取消";
-        cancel.disabled = reminder.status === "cancelled";
+        cancel.disabled = reminder.status !== "pending";
         cancel.addEventListener("click", () => cancelReminder(reminder.id));
-        row.append(summary, meta, cancel);
+        row.append(summary, badge, meta, cancel);
         return row;
       }),
     );
@@ -330,6 +375,10 @@ async function createReminder(event) {
     consent: form.get("consent") === "on",
     note: form.get("note") || null,
   };
+  if (!payload.consent) {
+    els.reminderStatus.textContent = "請先勾選「同意建立提醒」（提醒為 opt-in）";
+    return;
+  }
   try {
     await request("/reminders", {
       method: "POST",
@@ -377,3 +426,5 @@ setDefaultReminderTime();
 checkHealth();
 loadServices();
 loadReminders();
+// Poll so a due reminder visibly flips to 已送達 during a demo (ADR-0006 sweep).
+setInterval(loadReminders, 15000);

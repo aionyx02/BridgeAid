@@ -40,6 +40,7 @@ class ReminderStore(Protocol):
     def add(self, reminder: Reminder) -> None: ...
     def get(self, reminder_id: str) -> Reminder | None: ...
     def list_for(self, session_id: str) -> list[Reminder]: ...
+    def list_pending(self) -> list[Reminder]: ...
     def save(self, reminder: Reminder) -> None: ...
 
 
@@ -57,6 +58,9 @@ class InMemoryReminderStore:
 
     def list_for(self, session_id: str) -> list[Reminder]:
         return [r for r in self._reminders.values() if r.session_id == session_id]
+
+    def list_pending(self) -> list[Reminder]:
+        return [r for r in self._reminders.values() if r.status == STATUS_PENDING]
 
     def save(self, reminder: Reminder) -> None:
         self._reminders[reminder.id] = reminder

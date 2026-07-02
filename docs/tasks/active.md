@@ -2,7 +2,7 @@
 type: task_index
 status: active
 priority: p0
-updated: 2026-06-26
+updated: 2026-07-02
 context_policy: always_retrievable
 owner: project
 ---
@@ -11,111 +11,70 @@ owner: project
 
 ## Active Queue
 
-### TASK.001 - 題目收斂與 MVP 服務清單
+### TASK.010 - OllamaIntentParser（ADR-0004）
 
 - Status: done
 - Priority: P0
 - Owner: shawn
-- Started: 2026-06-25
+- Started: 2026-07-02
 - Related docs:
-  - `docs/project.md`
-  - `docs/memory/current.md`
+  - `docs/adr/0004-llm-intent-parser-via-local-ollama.md`
+  - `docs/data.md`
 - Acceptance criteria:
-  - [x] 確認 MVP 主場景（急難救助 + 住宅/生活補助 + 邊緣戶提醒）。
-  - [x] 選定 5–10 筆服務候選並標註官方來源 URL。
-  - [x] 確認 Demo 地理範圍（1–2 縣市 + 中央）。
+  - [x] `OllamaIntentParser` 實作 `IntentParser` port；`INTENT_PARSER=ollama` 才啟用，預設 deterministic。
+  - [x] 輸出經白名單/型別/枚舉清洗；布林只設 True；deterministic 命中優先。
+  - [x] Ollama 不可用/逾時/非 JSON → fallback deterministic，不阻斷對話。
 - Validation:
-  - [x] `npm run docs:refresh`
+  - [x] `uv run ruff check .`
+  - [x] `uv run pytest`（114 passed）
 - Notes:
-  - 詳細服務整理見 `docs/data.md` 的 MVP Service Candidate Scope。
+  - 本機 Ollama 實測待 maintainer 安裝（`ollama pull qwen3:4b`）；測試用 MockTransport。
 
-### TASK.006 - 提醒系統（opt-in）與來源追溯（Week 6）
+### TASK.011 - 提醒到期送達（輕量 in-process 排程）
 
 - Status: done
 - Priority: P0
 - Owner: shawn
-- Started: 2026-06-25
+- Started: 2026-07-02
 - Related docs:
+  - `docs/adr/0006-reminder-delivery-via-lightweight-in-process-scheduler.md`
   - `docs/security.md`
-  - `docs/data.md`
-  - `docs/adr/0005-opt-in-reminder-system-and-source-trace-endpoints.md`
 - Acceptance criteria:
-  - [x] 提醒需 opt-in（無 consent 拒絕 403）；可建立/列出/取消，最小化欄位。
-  - [x] `reminder_type`/`channel`/`scheduled_at` 驗證（422）；取消需 session 擁有權（404）。
-  - [x] 來源追溯端點：`GET /services` 與 `GET /services/{id}/source`（含 version/needs_review/last_checked_at）。
+  - [x] FastAPI lifespan 內 asyncio 排程每 30s 掃描到期 pending 提醒。
+  - [x] LINE 配置時 push（`push_text`），否則模擬送達記 log；皆轉 `sent`。
+  - [x] 送達失敗留 pending 重試；排程例外不影響 API。
 - Validation:
-  - [x] `uv run ruff check .`
-  - [x] `uv run pytest`（65 passed）
+  - [x] `uv run pytest`（含 10 個 delivery 測試）
+  - [x] 實機驗證：過期提醒 30s 內轉 `sent`。
 - Notes:
-  - 提醒先 in-memory（`ReminderStore` port）；DB（`reminder_tasks`）與實際送達（排程）為後續。
+  - ADR-0006 為 proposed，待 maintainer 接受；Redis/Celery 延後至部署規模需要時。
 
-### TASK.007 - Demo 情境回歸測試（Week 7）
+### TASK.012 - Docker Postgres 落地 + Demo UI 打磨
 
 - Status: done
 - Priority: P0
 - Owner: shawn
-- Started: 2026-06-26
-- Related docs:
-  - `docs/testing.md`
-  - `docs/data.md`
-- Acceptance criteria:
-  - [x] 建立 10–20 組 demo 情境 fixture，涵蓋急難、租屋、低收入、長照、失業與衝突提示。
-  - [x] 回歸測試確認 deterministic parser 抽取關鍵欄位，rule engine 推薦預期服務。
-  - [x] 每組可能推薦結果皆保留來源追溯，不輸出不存在的服務 ID。
-- Validation:
-  - [x] `uv run ruff check .`
-  - [x] `uv run pytest`（91 passed）
-  - [x] `npm run docs:refresh`
-- Notes:
-  - 12 組情境 fixture 位於 `tests/fixtures/demo_scenarios.json`；不接外部 LLM、不新增網路或排程依賴。
-
-### TASK.008 - MVP 服務資料準確性稽核
-
-- Status: done
-- Priority: P0
-- Owner: shawn
-- Started: 2026-06-26
-- Related docs:
-  - `docs/data.md`
-  - `docs/testing.md`
-- Acceptance criteria:
-  - [x] 重新核對 6 筆服務的官方來源與核心資格摘要。
-  - [x] 修正明顯過寬或過舊的 demo 規則。
-  - [x] 對仍需人工政策審核的服務保留 `needs_review`。
-- Validation:
-  - [x] `uv run ruff check .`
-  - [x] `uv run pytest`（91 passed）
-  - [x] `npm run docs:refresh`
-- Notes:
-  - 修正租金補貼來源、社宅成年年齡、急難救助事件條件、長照 care_need 條件。
-
-### TASK.009 - Web Demo Shell（無新增依賴）
-
-- Status: done
-- Priority: P0
-- Owner: shawn
-- Started: 2026-06-26
+- Started: 2026-07-02
 - Related docs:
   - `docs/ui.md`
   - `docs/accessibility.md`
-  - `docs/html-guidelines.md`
 - Acceptance criteria:
-  - [x] FastAPI 可於 `/demo/` serve Web demo，不需新增 Node 或前端依賴。
-  - [x] Demo 可呼叫 `/chat`、`/services/{id}/source`、`/reminders`，展示推薦、文件 checklist、來源追溯與 opt-in 提醒。
-  - [x] UI 使用語意化 HTML、鍵盤可操作表單與可見 focus。
+  - [x] `docker-compose.yml`（postgres:17-alpine，綁 127.0.0.1，initdb 自動套 schema）。
+  - [x] `app.importer` 實跑匯入 6 服務；API 保留 degraded mode。
+  - [x] Demo UI：提醒狀態中文徽章 + 輪詢展示送達、送出中狀態、衝突訊息服務名稱化。
 - Validation:
-  - [x] `uv run ruff check .`
-  - [x] `uv run pytest`（93 passed）
-  - [x] `npm run docs:refresh`
+  - [x] `docker compose up -d` + importer（6 services / 15 documents / 2 conflicts）
+  - [x] `uv run pytest`（114 passed）
 - Notes:
-  - 靜態檔位於 `demo/`；本機服務 URL：`http://127.0.0.1:8000/demo/`。
+  - 對話衝突提示改顯示服務中文名稱（原 raw id）。
 
 ## Strategy
 
-Keep `active.md` compact. Every active task must include an `Owner` from `docs/team/members.md`. Use `project` only for placeholder or unassigned setup work; `doing` tasks should be assigned to a real member. Put task-level details in dedicated `docs/tasks/*.md`, detailed implementation notes in per-member session logs, and future ideas in `docs/tasks/backlog.md`. 已完成任務見 `docs/tasks/completed.md`。
+Keep `active.md` compact. Every active task must include an `Owner` from `docs/team/members.md`. Use `project` only for placeholder or unassigned setup work; `doing` tasks should be assigned to a real member. Put task-level details in dedicated `docs/tasks/*.md`, detailed implementation notes in per-member session logs, and future ideas in `docs/tasks/backlog.md`. 已完成任務見 `docs/tasks/completed.md`（TASK.001–009 已移出本檔）。
 
 ## Next Phase Candidates
 
-- 提醒實際送達（Redis/Celery + LINE/Email）。
-- 接入本地 Ollama intent parser（ADR-0004）。
-- Demo 打磨與 10–20 組測試情境（Week 7）。
+- LINE 實連驗證：tunnel（ngrok/cloudflared）+ webhook URL 設定 + 真機 reply/push（憑證機制已就緒）。
+- Ollama 本機實測與模型選型（qwen3 小尺寸起）。
+- 4 筆 `needs_review` 服務的人工政策審核（maintainer）。
+- session/提醒改 DB 持久化（schema 已就緒）。

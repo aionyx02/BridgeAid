@@ -2,7 +2,7 @@
 type: task_archive_index
 status: archive
 priority: p3
-updated: 2026-06-26
+updated: 2026-07-02
 context_policy: on_demand
 owner: project
 ---
@@ -23,3 +23,6 @@ owner: project
 | `TASK.007` | Demo 情境回歸測試（Week 7） | `docs/memory/sessions/2026-06-26-shawn.md` |
 | `TASK.008` | MVP 服務資料準確性稽核 | `docs/memory/sessions/2026-06-26-shawn.md` |
 | `TASK.009` | Web Demo Shell（無新增依賴） | `docs/memory/sessions/2026-06-26-shawn.md` |
+| `TASK.010` | OllamaIntentParser（ADR-0004）：本地 LLM 欄位抽取 + 白名單清洗 + deterministic fallback，預設關閉 | `docs/memory/sessions/2026-07-02-shawn.md` |
+| `TASK.011` | 提醒到期送達（ADR-0006 proposed）：lifespan asyncio 排程 + LINE push/模擬送達，失敗重試 | `docs/memory/sessions/2026-07-02-shawn.md` |
+| `TASK.012` | Docker Postgres 落地（compose + initdb schema + importer 實跑）與 Demo UI 打磨 | `docs/memory/sessions/2026-07-02-shawn.md` |

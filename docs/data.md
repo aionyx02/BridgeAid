@@ -2,7 +2,7 @@
 type: data_contracts
 status: active
 priority: p1
-updated: 2026-06-25
+updated: 2026-07-02
 context_policy: retrieve_when_planning
 owner: project
 ---
@@ -19,7 +19,7 @@ owner: project
 
 ## 中介格式策略
 
-服務規則以 JSON/YAML 作為「中介格式」（適合版控、人工審核、黑客松快速修改），經 JSON Schema 驗證後匯入 PostgreSQL（適合查詢、session、提醒、版本管理）。不可只用 JSON 檔當正式資料庫。
+服務規則以 JSON/YAML 作為「中介格式」（利於版控與人工審核），經 JSON Schema 驗證後匯入 PostgreSQL。不可只用 JSON 檔當正式資料庫。
 
 來源 → 標準化 JSON/YAML → JSON Schema 驗證 → 匯入 PostgreSQL → API / Rule Engine / Reminder。
 

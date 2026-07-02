@@ -2,7 +2,7 @@
 type: decision_index
 status: active
 priority: p1
-updated: 2026-06-25
+updated: 2026-07-02
 context_policy: retrieve_only
 owner: project
 ---
@@ -17,5 +17,6 @@ owner: project
 | `0001` | proposed | ADR-0001: HTML And UI Documentation Boundary |
 | `0002` | accepted | ADR-0002: BridgeAid initial architecture and AI boundary |
 | `0003` | accepted | ADR-0003: Backend skeleton: persistence, secrets, and API surface |
-| `0004` | proposed | ADR-0004: LLM intent parser via local Ollama |
-| `0005` | proposed | ADR-0005: Opt-in reminder system and source-trace endpoints |
+| `0004` | accepted | ADR-0004: LLM intent parser via local Ollama |
+| `0005` | accepted | ADR-0005: Opt-in reminder system and source-trace endpoints |
+| `0006` | accepted | ADR-0006: Reminder delivery via lightweight in-process scheduler |

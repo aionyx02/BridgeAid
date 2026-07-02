@@ -136,6 +136,10 @@ class ConversationManager:
         # most_common breaks ties by insertion order -> deterministic
         return counter.most_common(1)[0][0]
 
+    def _service_name(self, service_id: str) -> str:
+        rule = self._rules_by_id.get(service_id)
+        return rule["name"] if rule else service_id
+
     def _result_reply(self, evaluations: list[Any]) -> Reply:
         recommendation = build_recommendation(evaluations, self._rules_by_id)
         if not recommendation.possible:
@@ -149,7 +153,10 @@ class ConversationManager:
             "實際仍需由承辦單位依正式資料確認。"
         )
         if recommendation.conflicts:
-            pairs = "；".join("、".join(c["service_ids"]) for c in recommendation.conflicts)
+            pairs = "；".join(
+                "、".join(self._service_name(sid) for sid in c["service_ids"])
+                for c in recommendation.conflicts
+            )
             text += f"（注意：部分服務可能需擇一：{pairs}）"
         return Reply(
             kind=KIND_RESULT,

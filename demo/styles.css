@@ -155,6 +155,11 @@ button:hover {
   background: var(--primary-strong);
 }
 
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .samples button,
 .quick-replies button,
 .ghost-button {
@@ -275,6 +280,21 @@ textarea {
   color: var(--warning);
 }
 
+.badge.status-pending {
+  background: #e0f2fe;
+  color: #075985;
+}
+
+.badge.status-sent {
+  background: #dcfce7;
+  color: var(--success);
+}
+
+.badge.status-cancelled {
+  background: #f1f5f9;
+  color: var(--muted);
+}
+
 .meta {
   margin: 6px 0;
   color: var(--muted);
@@ -346,6 +366,22 @@ dialog::backdrop {
 
 .dialog-body {
   padding: 18px;
+}
+
+.dialog-body dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 16px;
+  margin: 0 0 12px;
+}
+
+.dialog-body dt {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.dialog-body dd {
+  margin: 0;
 }
 
 .source-link {
