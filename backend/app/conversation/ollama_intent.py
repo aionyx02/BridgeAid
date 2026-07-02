@@ -25,17 +25,24 @@ from .intent import DeterministicIntentParser, IntentParser
 logger = logging.getLogger(__name__)
 
 DEFAULT_HOST = "http://localhost:11434"
-DEFAULT_MODEL = "qwen3:4b"
+# Measured on the demo scenarios (2026-07-02): qwen2.5:1.5b beat qwen3:4b
+# (non-thinking) on zh-TW extraction with zero hallucinated fields, and is
+# smaller/faster. Override with OLLAMA_MODEL.
+DEFAULT_MODEL = "qwen2.5:1.5b"
 # Local single-turn extraction; fail fast so the fallback keeps the chat snappy.
 TIMEOUT = httpx.Timeout(10.0, connect=2.0)
 
 # Canonical profile tokens (docs/data.md). Anything outside these is dropped.
+# income_status is deliberately NOT extractable by the LLM: it is a
+# government-certified status the model keeps inferring from mere hardship
+# ("經濟出狀況" -> low_income), and a false positive skews eligibility. The
+# formal wordings (低收/中低收/邊緣戶) are covered by the keyword parser, and
+# otherwise the rule engine asks the follow-up question.
 _ENUM_FIELDS: dict[str, frozenset[str]] = {
     "residence_city": frozenset({"Taipei", "Kaohsiung"}),
     "event_type": frozenset(
         {"unemployment", "illness", "fire", "major_accident", "death_in_family"}
     ),
-    "income_status": frozenset({"low_income", "mid_low_income", "near_threshold", "general"}),
 }
 # Booleans follow the deterministic parser's rule: only ever set True, never
 # guess False, so unknown fields stay unknown and can still be asked.
@@ -65,10 +72,34 @@ _SYSTEM_PROMPT = """\
 - residence_city 只允許 Taipei（臺北市）或 Kaohsiung（高雄市）；其他縣市請省略。
 - event_type 只允許 unemployment（失業）、illness（生病/住院）、fire（火災）、\
 major_accident（重大事故）、death_in_family（家人過世）。
-- income_status 只允許 low_income（低收入戶）、mid_low_income（中低收入戶）、\
-near_threshold（邊緣戶）、general（一般）。
-- age 為使用者本人年齡的整數；敘述中是別人的年齡就省略。
+- 不要輸出收入身分；經濟困難與否由系統另外詢問。
+- age 為使用者本人年齡的整數（中文數字也要轉換，如「四十二歲」→ 42）；是別人的年齡就省略。
+- 口語、台語也要理解（「頭路無去/無頭路」= unemployment、「阿嬤走了/過世」= \
+death_in_family、「租厝」= has_lease、「四十二歲」= age 42）。
 - 不評斷資格、不給建議，只抽取欄位。"""
+
+
+# Small local models copy fields out of instructions or thin air. Each of
+# these LLM-extracted fields must be backed by at least one marker actually
+# present in the user's text, or it is dropped (untrusted-input principle).
+_EVIDENCE_MARKERS: dict[str, tuple[str, ...]] = {
+    "age": ("歲", "今年", "年紀", "年齡"),
+    "has_lease": ("租", "厝"),
+    "caregiver": ("照", "顧", "護"),
+    "care_need": ("失能", "失智", "臥床", "長照", "照", "顧", "護", "重度"),
+    "employment_insured": ("勞保", "就業保險", "保"),
+}
+
+
+def _evidence_gate(text: str, profile: dict[str, Any]) -> dict[str, Any]:
+    gated = dict(profile)
+    for field, markers in _EVIDENCE_MARKERS.items():
+        if field not in gated:
+            continue
+        has_digits = field == "age" and any(ch.isdigit() for ch in text)
+        if not has_digits and not any(marker in text for marker in markers):
+            del gated[field]
+    return gated
 
 
 def _clean(raw: Any) -> dict[str, Any]:
@@ -127,13 +158,16 @@ class OllamaIntentParser:
                     {"role": "user", "content": text},
                 ],
                 "stream": False,
+                # Thinking models (qwen3) burn the whole timeout on reasoning
+                # tokens before the JSON; non-thinking models accept false too.
+                "think": False,
                 "format": _FORMAT_SCHEMA,
                 "options": {"temperature": 0},
             },
         )
         response.raise_for_status()
         content = response.json()["message"]["content"]
-        return _clean(json.loads(content))
+        return _evidence_gate(text, _clean(json.loads(content)))
 
 
 def build_intent_parser(settings: Settings) -> IntentParser:

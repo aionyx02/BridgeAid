@@ -22,6 +22,7 @@ def _parser_returning(content: dict | str) -> OllamaIntentParser:
         assert request.url.path == "/api/chat"
         payload = json.loads(request.content)
         assert payload["stream"] is False
+        assert payload["think"] is False  # thinking would blow the latency budget
         return httpx.Response(200, json={"message": {"role": "assistant", "content": body}})
 
     return OllamaIntentParser(client=httpx.Client(transport=httpx.MockTransport(handler)))
@@ -54,14 +55,26 @@ def test_hallucinated_fields_and_invalid_tokens_are_washed():
         {
             "residence_city": "Tokyo",  # not a supported city token
             "event_type": "divorce",  # not a canonical event
-            "income_status": "low_income",
+            "income_status": "low_income",  # certified status: LLM may never set it
             "has_lease": False,  # booleans may only be set True
             "caregiver": "yes",  # wrong type
             "age": 500,  # out of range
             "national_id": "A123456789",  # never whitelisted
         }
     )
-    assert parser.extract("隨便講講") == {"income_status": "low_income"}
+    assert parser.extract("隨便講講") == {}
+
+
+def test_fields_without_text_evidence_are_dropped():
+    # Model invents an age and a lease for a text that mentions neither.
+    parser = _parser_returning({"event_type": "death_in_family", "age": 35, "has_lease": True})
+    assert parser.extract("阿公上個月走了") == {"event_type": "death_in_family"}
+
+
+def test_fields_with_text_evidence_pass_the_gate():
+    parser = _parser_returning({"age": 42, "has_lease": True})
+    profile = parser.extract("我四十二歲，租厝住")
+    assert profile == {"age": 42, "has_lease": True}
 
 
 def test_deterministic_keywords_win_over_llm_output():
