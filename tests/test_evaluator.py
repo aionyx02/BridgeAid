@@ -99,16 +99,12 @@ def test_evaluate_all_ranks_possible_first(rules_by_id):
     }
     results = evaluate_all(list(rules_by_id.values()), profile)
     statuses = [r.status for r in results]
-    assert statuses == sorted(
-        statuses, key={POSSIBLE: 0, INSUFFICIENT_DATA: 1, UNLIKELY: 2}.get
-    )
+    assert statuses == sorted(statuses, key={POSSIBLE: 0, INSUFFICIENT_DATA: 1, UNLIKELY: 2}.get)
     assert results[0].status == POSSIBLE
 
 
 def test_detect_conflicts_choose_one(rules_by_id):
-    conflicts = detect_conflicts(
-        ["rent_subsidy_central", "social_housing_taipei"], rules_by_id
-    )
+    conflicts = detect_conflicts(["rent_subsidy_central", "social_housing_taipei"], rules_by_id)
     assert len(conflicts) == 1
     assert conflicts[0]["type"] == "choose_one"
     assert conflicts[0]["service_ids"] == ["rent_subsidy_central", "social_housing_taipei"]

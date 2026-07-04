@@ -45,7 +45,15 @@ def build_recommendation(
     possible = [e for e in evaluations if e.status == POSSIBLE]
     conflicts = detect_conflicts([e.service_id for e in possible], rules_by_id)
     return Recommendation(
-        possible=[asdict(e) for e in possible],
+        possible=[
+            # Attach the administrative steps so both entrances (LINE Flex
+            # cards, web stepper) can render the process without a second call.
+            {
+                **asdict(e),
+                "application_process": rules_by_id[e.service_id].get("application_process", []),
+            }
+            for e in possible
+        ],
         conflicts=conflicts,
         document_checklist=aggregate_documents(possible),
     )

@@ -21,6 +21,12 @@
   "conflicts": [
     { "service_id": "social_housing_taipei", "type": "choose_one", "reason": "同一租屋需求，租金補貼與承租社會住宅通常擇一。" }
   ],
+  "application_process": [
+    { "name": "準備文件", "description": "身分證、租賃契約、本人金融帳戶存摺封面影本。" },
+    { "name": "線上申請", "description": "於專案網站線上申請，全年受理、隨到隨審。", "url": "https://has.nlma.gov.tw/house300e/", "url_title": "300億元中央擴大租金補貼線上申請", "deadline": "115 年度受理至 2026-12-31 17:00 止。", "deadline_at": "2026-12-31" },
+    { "name": "審查", "description": "主管機關查調所得、住宅持有與租約資料，可於網站查詢進度。" },
+    { "name": "核定與撥款", "description": "核定後按月撥入指定帳戶；資格異動需主動通報。" }
+  ],
   "source": {
     "title": "行政院 - 300億元中央擴大租金補貼專案計畫（延長至115年）",
     "url": "https://www.ey.gov.tw/Page/5A8A0CB5B41DA11E/442e67f9-e22e-42c6-9df2-4d3fa9d10666",

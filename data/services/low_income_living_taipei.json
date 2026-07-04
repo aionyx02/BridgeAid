@@ -18,6 +18,12 @@
     { "name": "收入及財產證明", "condition": "always" }
   ],
   "conflicts": [],
+  "application_process": [
+    { "name": "準備文件", "description": "身分證明文件、社會扶助申請表、全戶收入與財產相關證明。" },
+    { "name": "向區公所申請", "description": "至戶籍地區公所社會課提出申請。", "url": "https://dosw.gov.taipei/Content_List.aspx?n=09B2CDA681C47C09", "url_title": "臺北市社會局社會救助專區" },
+    { "name": "資格審核", "description": "區公所與社會局審核全戶總收入、動產與不動產。" },
+    { "name": "核定與發給", "description": "核定後按月發給生活扶助費，並依規定定期複查。" }
+  ],
   "source": {
     "title": "臺北市政府社會局 - 低收入戶生活補助（含年節慰問金）",
     "url": "https://dosw.gov.taipei/cp.aspx?n=E6D700BD37E78592",

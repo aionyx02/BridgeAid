@@ -37,9 +37,7 @@ def test_recommend_returns_possible_for_matching_profile():
 
 
 def test_recommend_insufficient_data():
-    response = client.post(
-        "/recommend", json={"profile": {"residence_city": "Taipei"}}
-    )
+    response = client.post("/recommend", json={"profile": {"residence_city": "Taipei"}})
     emergency = next(
         r for r in response.json()["results"] if r["service_id"] == "emergency_aid_taipei"
     )

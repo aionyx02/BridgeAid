@@ -78,9 +78,7 @@ def _is_due(scheduled_at: str, now: datetime) -> bool:
     return due_at <= now
 
 
-def deliver_due(
-    store: ReminderStore, sender: ReminderSender, now: datetime | None = None
-) -> int:
+def deliver_due(store: ReminderStore, sender: ReminderSender, now: datetime | None = None) -> int:
     """Send every pending reminder whose time has come; return the count sent."""
     now = now or datetime.now()
     delivered = 0

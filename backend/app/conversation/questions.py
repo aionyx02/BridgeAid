@@ -59,9 +59,7 @@ QUESTIONS: dict[str, Question] = {
         "離開上一份工作是非自願的嗎？（被資遣、裁員、公司歇業）",
         [("是", True), ("否", False)],
     ),
-    "caregiver": Question(
-        "caregiver", "你目前是否在照顧家人？", [("是", True), ("否", False)]
-    ),
+    "caregiver": Question("caregiver", "你目前是否在照顧家人？", [("是", True), ("否", False)]),
     "care_need": Question(
         "care_need", "需要照顧的家人是否有失能/長照需求？", [("是", True), ("否", False)]
     ),

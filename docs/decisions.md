@@ -2,7 +2,7 @@
 type: decision_index
 status: active
 priority: p1
-updated: 2026-07-02
+updated: 2026-07-04
 context_policy: retrieve_only
 owner: project
 ---
@@ -20,3 +20,4 @@ owner: project
 | `0004` | accepted | ADR-0004: LLM intent parser via local Ollama |
 | `0005` | accepted | ADR-0005: Opt-in reminder system and source-trace endpoints |
 | `0006` | accepted | ADR-0006: Reminder delivery via lightweight in-process scheduler |
+| `0007` | proposed | ADR-0007: Application process data contract and LINE interactive layer |

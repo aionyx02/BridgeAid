@@ -118,11 +118,10 @@ async function submitChat(text) {
     });
     state.lastReply = reply;
     addMessage("assistant", reply.text);
-    if (reply.kind === "question") {
-      renderQuickReplies(reply.options || []);
-      return;
+    renderQuickReplies(reply.options || []);
+    if (reply.kind === "result") {
+      renderResults(reply);
     }
-    renderResults(reply);
   } catch (error) {
     addMessage("assistant", `暫時無法取得回覆：${error.message}`);
   } finally {
@@ -199,10 +198,84 @@ function renderCards(results) {
       sourceButton.textContent = "查看來源";
       sourceButton.addEventListener("click", () => showSource(service.service_id));
 
-      card.append(title, badge, source, docs, sourceButton);
+      const remindButton = document.createElement("button");
+      remindButton.type = "button";
+      remindButton.textContent = "提醒我申請";
+      remindButton.addEventListener("click", () => prefillReminder(service));
+
+      card.append(title, badge, source, docs);
+      const steps = renderProcessSteps(service.application_process || []);
+      if (steps) {
+        card.append(steps);
+      }
+      card.append(sourceButton, remindButton);
       return card;
     }),
   );
+}
+
+function renderProcessSteps(processSteps) {
+  if (!processSteps.length) {
+    return null;
+  }
+  const wrapper = document.createElement("section");
+  wrapper.className = "process";
+  const heading = document.createElement("h4");
+  heading.textContent = "申請流程";
+  const list = document.createElement("ol");
+  list.className = "process-steps";
+  for (const step of processSteps) {
+    const item = document.createElement("li");
+    item.textContent = `${step.name}：${step.description}`;
+    if (step.deadline) {
+      const deadline = document.createElement("p");
+      deadline.className = "deadline";
+      deadline.textContent = `⏰ ${step.deadline}`;
+      item.append(deadline);
+    }
+    if (step.url) {
+      const link = document.createElement("a");
+      link.href = step.url;
+      link.target = "_blank";
+      link.rel = "noreferrer";
+      link.textContent = `${step.url_title || "官方連結"} ↗`;
+      const linkRow = document.createElement("p");
+      linkRow.append(link);
+      item.append(linkRow);
+    }
+    list.append(item);
+  }
+  wrapper.append(heading, list);
+  return wrapper;
+}
+
+function prefillReminder(service) {
+  // Mirror the LINE flow: deadline minus 7 days at 09:00, else a week from now;
+  // consent stays unchecked — the human must opt in themselves (ADR-0005).
+  const deadlines = (service.application_process || [])
+    .map((step) => step.deadline_at)
+    .filter(Boolean)
+    .map((value) => new Date(`${value}T09:00:00`))
+    .filter((date) => !Number.isNaN(date.getTime()));
+  const target = deadlines.length
+    ? new Date(Math.min(...deadlines))
+    : new Date(Date.now() + 7 * 86400000);
+  if (deadlines.length) {
+    target.setDate(target.getDate() - 7);
+  }
+  const floor = new Date(Date.now() + 86400000);
+  floor.setHours(9, 0, 0, 0);
+  const chosen = target > floor ? target : floor;
+  chosen.setHours(9, 0, 0, 0);
+
+  els.reminderForm.reminder_type.value = "deadline";
+  els.scheduledAt.value = new Date(chosen.getTime() - chosen.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 16);
+  els.reminderForm.note.value = service.service_name.slice(0, 80);
+  els.reminderStatus.textContent = "已帶入提醒內容，勾選同意後送出即可建立。";
+  els.reminderForm.scrollIntoView({ behavior: "smooth", block: "start" });
+  els.reminderForm.consent.focus();
 }
 
 function renderChecklist(items) {

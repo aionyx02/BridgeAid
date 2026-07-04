@@ -2,7 +2,7 @@
 type: working_memory
 status: active
 priority: p0
-updated: 2026-07-02
+updated: 2026-07-04
 context_policy: always_retrievable
 owner: project
 ---
@@ -18,8 +18,8 @@ owner: project
 
 ## Current Focus
 
-- Active priority: TASK.010–012 完成。Ollama parser（預設關閉，`INTENT_PARSER=ollama` 啟用）、提醒到期送達（lifespan 排程）、Docker Postgres（compose + initdb）、Demo UI 打磨皆可跑並實測。
-- Current phase: API 全功能可跑（degraded mode 仍支援）；ADR-0002–0006 全數 accepted。
+- Active priority: TASK.014–016 完成。申請流程資料契約（`application_process`）、LINE Flex 流程卡 + 提醒 opt-in postback、對話式資料管理（我的資料/修改/清除資料）+ 1957 轉介皆入 code 待 review。
+- Current phase: API 全功能可跑（degraded mode 仍支援）；ADR-0002–0006 accepted，ADR-0007 proposed 待接受。
 - Current owner / handoff state: shawn（maintainer）；團隊其他成員尚未登錄。
 
 ## Important Constraints
@@ -32,12 +32,12 @@ owner: project
 
 ## Next Step
 
-- LINE 實連已完成真機驗證（2026-07-02：真實帳號發訊息收到 bot 回覆）；tunnel 重開後用 `uv run python -m app.line.set_webhook https://<tunnel-host>` 重設。
-- Ollama 已實測定案：`qwen2.5:1.5b`（優於 qwen3:4b 非思考模式，無幻覺、0.8–3s）；`think:false` + 證據閘門已入 code。
-- 政策審核完成（2026-07-02）：6 筆服務全 active；失業給付新增 `involuntary_separation` 法定要件。後續建議季度複查來源。
+- TASK.014–016 待 maintainer review 後 commit；ADR-0007 待接受。LINE 端 Flex 卡/postback 需 tunnel 重開後真機走一次（`uv run python -m app.line.set_webhook https://<tunnel-host>`）。
+- Ollama 已實測定案：`qwen2.5:1.5b`（`think:false` + 證據閘門已入 code）。
+- 政策審核完成（2026-07-02，6 筆全 active）；後續建議季度複查來源。
 
 ## Last Validation Snapshot
 
-- Last docs refresh: 2026-07-02
-- Last test command: uv run pytest（114 passed）/ uv run ruff check .
+- Last docs refresh: 2026-07-04
+- Last test command: uv run pytest（142 passed）/ uv run ruff check . / uv run ruff format --check .
 - Known failing checks: none

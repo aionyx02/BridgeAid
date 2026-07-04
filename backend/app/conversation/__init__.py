@@ -10,6 +10,7 @@ deterministic fallback.
 
 from .intent import DeterministicIntentParser, IntentParser
 from .manager import (
+    FIELD_LABELS,
     MAX_QUESTIONS,
     ConversationManager,
     InMemorySessionStore,
@@ -30,4 +31,5 @@ __all__ = [
     "Session",
     "Reply",
     "MAX_QUESTIONS",
+    "FIELD_LABELS",
 ]

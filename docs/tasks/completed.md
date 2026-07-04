@@ -2,7 +2,7 @@
 type: task_archive_index
 status: archive
 priority: p3
-updated: 2026-07-02
+updated: 2026-07-04
 context_policy: on_demand
 owner: project
 ---
@@ -27,3 +27,6 @@ owner: project
 | `TASK.011` | 提醒到期送達（ADR-0006 proposed）：lifespan asyncio 排程 + LINE push/模擬送達，失敗重試 | `docs/memory/sessions/2026-07-02-shawn.md` |
 | `TASK.012` | Docker Postgres 落地（compose + initdb schema + importer 實跑）與 Demo UI 打磨 | `docs/memory/sessions/2026-07-02-shawn.md` |
 | `TASK.013` | 4 筆 needs_review 服務政策審核：修正後全數升 active（含失業給付補非自願離職要件） | `docs/memory/sessions/2026-07-02-shawn.md` |
+| `TASK.014` | application_process 資料契約、6 服務流程步驟、GET /services/{id}/process，推薦結果附 steps | `docs/memory/sessions/2026-07-04-shawn.md` |
+| `TASK.015` | LINE Flex 流程卡（官方入口/來源/提醒按鈕）+ postback opt-in 提醒流 + Web demo 流程渲染 | `docs/memory/sessions/2026-07-04-shawn.md` |
+| `TASK.016` | 我的資料/修改/清除資料 對話指令（kind=info）+ 1957 福利諮詢專線轉介（空結果與邊緣戶） | `docs/memory/sessions/2026-07-04-shawn.md` |

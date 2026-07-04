@@ -16,6 +16,12 @@
     { "name": "失能或診斷證明", "condition": { "field": "care_need", "operator": "equals", "value": true } }
   ],
   "conflicts": [],
+  "application_process": [
+    { "name": "撥打 1966 申請", "description": "備妥受照顧者身分資料撥打 1966 長照專線；住院中可由醫院出院準備服務直接轉介。", "url": "https://1966.gov.tw/LTC/cp-6533-70777-207.html", "url_title": "1966 長照專區申請說明" },
+    { "name": "照管中心評估", "description": "照顧管理專員到府評估失能等級（CMS 1–8 級）。" },
+    { "name": "擬訂照顧計畫", "description": "依等級核給額度，與個管員擬訂計畫並媒合服務單位。" },
+    { "name": "開始使用服務", "description": "依額度使用照顧、喘息等服務，按身分別部分負擔。" }
+  ],
   "source": {
     "title": "衛福部長照專區（1966）- 申請長照服務（長照 3.0 自 115 年起實施）",
     "url": "https://1966.gov.tw/LTC/cp-6533-70777-207.html",

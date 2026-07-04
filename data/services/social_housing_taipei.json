@@ -20,6 +20,12 @@
   "conflicts": [
     { "service_id": "rent_subsidy_central", "type": "choose_one", "reason": "同一租屋需求，承租社會住宅與租金補貼通常擇一。" }
   ],
+  "application_process": [
+    { "name": "留意招租公告", "description": "各社宅案招租期間不同，於安心樂租網關注公告。", "url": "https://rent.thurc.org.taipei/", "url_title": "臺北市安心樂租網", "deadline": "依各案招租公告期間為準。" },
+    { "name": "準備文件", "description": "身分證明、戶籍證明或在本市就學/就業證明、全戶所得與財產資料。" },
+    { "name": "送件申請", "description": "於招租期間線上或臨櫃送件。" },
+    { "name": "審查與抽籤選屋", "description": "資格審查通過後依抽籤或排序結果選屋、簽約入住。" }
+  ],
   "source": {
     "title": "臺北市政府 - 承租社會住宅資格",
     "url": "https://www.gov.taipei/News_Content.aspx?n=EEC70A4186D4C828&s=ECE04E630293064E&sms=87415A8B9CE81B16",

@@ -18,6 +18,12 @@
     { "name": "診斷證明", "condition": { "field": "event_type", "operator": "equals", "value": "illness" } }
   ],
   "conflicts": [],
+  "application_process": [
+    { "name": "準備文件", "description": "身分證明文件，並依事故情形備妥事故證明或診斷證明。" },
+    { "name": "提出申請", "description": "向戶籍地或事實發生地區公所、社會福利服務中心申請，亦可線上申辦。", "url": "https://service.gov.taipei/Case/ApplyWay/201903210002", "url_title": "臺北市民e點通線上申辦", "deadline": "事實發生後請儘速申請，逾期恐影響認定，可先電洽區公所確認。" },
+    { "name": "會談與訪視評估", "description": "由承辦單位會談、必要時到府訪視；約 7–10 個工作天。" },
+    { "name": "核定與撥款", "description": "審核通過後核發救助金至指定帳戶。" }
+  ],
   "source": {
     "title": "臺北市政府社會局 - 急難救助",
     "url": "https://dosw.gov.taipei/cp.aspx?n=0BF751F1B9F07AA1",

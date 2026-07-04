@@ -18,6 +18,12 @@
     { "name": "非自願離職證明文件（離職前 3 年內就保年資合計滿 1 年，由公立就服機構確認）", "condition": "always" }
   ],
   "conflicts": [],
+  "application_process": [
+    { "name": "取得非自願離職證明", "description": "向原雇主索取，或由勞保局/地方勞工局認定。" },
+    { "name": "求職登記與申請", "description": "親至公立就業服務機構辦理求職登記並提出失業給付申請。", "url": "https://www.taiwanjobs.gov.tw/", "url_title": "台灣就業通（就服機構查詢）", "deadline": "請領時效：離職退保之次日起 2 年內。" },
+    { "name": "等待推介與失業認定", "description": "14 日內未能推介就業或安排職訓者，完成失業認定。" },
+    { "name": "按月領取", "description": "核定後按月發給平均月投保薪資 60%，最長 6 個月（45 歲以上或身心障礙者 9 個月）；每月需辦理失業再認定。" }
+  ],
   "source": {
     "title": "勞動部勞動力發展署 - 失業給付",
     "url": "https://emps.wda.gov.tw/Internet/Index/labor-benefits.aspx",

@@ -13,6 +13,7 @@ from typing import Any, Protocol
 import httpx
 
 from ..conversation import Reply
+from .flex import results_flex_message
 
 REPLY_URL = "https://api.line.me/v2/bot/message/reply"
 PUSH_URL = "https://api.line.me/v2/bot/message/push"
@@ -29,7 +30,7 @@ def push_text(access_token: str, to: str, text: str) -> None:
 
 
 def reply_to_messages(reply: Reply) -> list[dict[str, Any]]:
-    """Render a Reply as LINE message objects (text + quick-reply buttons)."""
+    """Render a Reply as LINE messages (text + quick replies + Flex cards)."""
     message: dict[str, Any] = {"type": "text", "text": reply.text}
     if reply.options:
         message["quickReply"] = {
@@ -41,19 +42,31 @@ def reply_to_messages(reply: Reply) -> list[dict[str, Any]]:
                 for option in reply.options[:13]  # LINE allows up to 13 quick-reply items
             ]
         }
-    return [message]
+    messages: list[dict[str, Any]] = [message]
+    flex = results_flex_message(reply.results)
+    if flex:
+        messages.append(flex)
+    return messages
 
 
 class LineReplyClient(Protocol):
     def reply(self, access_token: str, reply_token: str, reply: Reply) -> None: ...
+    def reply_messages(
+        self, access_token: str, reply_token: str, messages: list[dict[str, Any]]
+    ) -> None: ...
 
 
 class HttpxLineReplyClient:
     def reply(self, access_token: str, reply_token: str, reply: Reply) -> None:
+        self.reply_messages(access_token, reply_token, reply_to_messages(reply))
+
+    def reply_messages(
+        self, access_token: str, reply_token: str, messages: list[dict[str, Any]]
+    ) -> None:
         httpx.post(
             REPLY_URL,
             headers={"Authorization": f"Bearer {access_token}"},
-            json={"replyToken": reply_token, "messages": reply_to_messages(reply)},
+            json={"replyToken": reply_token, "messages": messages[:5]},  # LINE reply cap
             timeout=10.0,
         )
 

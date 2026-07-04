@@ -16,6 +16,7 @@ import contextlib
 import json
 from collections.abc import AsyncIterator
 from dataclasses import asdict
+from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -27,6 +28,8 @@ from pydantic import BaseModel, Field
 from . import config
 from .conversation import ConversationManager, InMemorySessionStore, build_intent_parser
 from .line.client import build_reply_client
+from .line.flex import remind_consent_message
+from .line.postback import parse_postback, reminder_time
 from .line.webhook import verify_signature
 from .recommendation import build_recommendation
 from .reminder_delivery import LineOrLogSender, run_scheduler
@@ -51,9 +54,7 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
             await scheduler
 
 
-app = FastAPI(
-    title="BridgeAid", summary="Proactive Public Service Navigator", lifespan=_lifespan
-)
+app = FastAPI(title="BridgeAid", summary="Proactive Public Service Navigator", lifespan=_lifespan)
 DEMO_DIR = Path(__file__).resolve().parents[2] / "demo"
 app.mount("/demo", StaticFiles(directory=DEMO_DIR, html=True), name="demo")
 
@@ -194,6 +195,22 @@ def service_source(service_id: str) -> dict[str, Any]:
     }
 
 
+@app.get("/services/{service_id}/process")
+def service_process(service_id: str) -> dict[str, Any]:
+    """Administrative process steps for one service (TASK.014)."""
+    rule = _rules_by_id().get(service_id)
+    if rule is None:
+        raise HTTPException(status_code=404, detail="service not found")
+    return {
+        "service_id": service_id,
+        "service_name": rule["name"],
+        "steps": rule.get("application_process", []),
+        "version": rule["version"],
+        "needs_review": rule.get("status") == "needs_review",
+        "source": rule["source"],
+    }
+
+
 @app.post("/line/webhook")
 async def line_webhook(request: Request) -> dict[str, str]:
     settings = config.load_settings()
@@ -208,13 +225,60 @@ async def line_webhook(request: Request) -> dict[str, str]:
     payload = json.loads(body or b"{}")
     manager = _manager()
     for event in payload.get("events", []):
+        reply_token = event.get("replyToken")
+        session_id = event.get("source", {}).get("userId") or reply_token or ""
+
+        if event.get("type") == "postback":
+            messages = handle_postback(session_id, event.get("postback", {}).get("data", ""))
+            if messages and settings.line_send_configured and reply_token:
+                reply_client.reply_messages(
+                    settings.line_channel_access_token or "", reply_token, messages
+                )
+            continue
+
         if event.get("type") != "message" or event.get("message", {}).get("type") != "text":
             continue
-        source = event.get("source", {})
-        session_id = source.get("userId") or event.get("replyToken", "")
         reply = manager.handle_message(session_id, event["message"]["text"], channel="line")
-        reply_token = event.get("replyToken")
         if settings.line_send_configured and reply_token:
             reply_client.reply(settings.line_channel_access_token or "", reply_token, reply)
 
     return {"status": "ok"}
+
+
+def handle_postback(session_id: str, data: str) -> list[dict[str, Any]]:
+    """Opt-in reminder flow: ask consent first, store only after remind_ok."""
+    fields = parse_postback(data)
+    action = fields.get("action")
+
+    if action == "remind_no":
+        return [
+            {
+                "type": "text",
+                "text": "好的，先不建立提醒。之後想要提醒時，再點卡片上的「提醒我申請」即可。",
+            }
+        ]
+
+    rule = _rules_by_id().get(fields.get("service", ""))
+    if rule is None:
+        return []
+
+    if action == "remind":
+        return [remind_consent_message(rule["id"], rule["name"])]
+
+    if action == "remind_ok":
+        scheduled_at = reminder_time(rule.get("application_process", []), datetime.now())
+        reminder = _reminders.create(
+            session_id, "deadline", scheduled_at, "line", consent=True, note=rule["name"]
+        )
+        when = reminder.scheduled_at.replace("T", " ")
+        return [
+            {
+                "type": "text",
+                "text": (
+                    f"已建立「{rule['name']}」的申請提醒，"
+                    f"預計 {when} 透過 LINE 通知你。提醒可隨時取消。"
+                ),
+            }
+        ]
+
+    return []
