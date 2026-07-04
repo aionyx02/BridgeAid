@@ -39,6 +39,10 @@ Before final response, handoff, or commit:
 - Main users: Digitally excluded citizens, caregivers, renters, unemployed or emergency households, people near eligibility thresholds; plus social workers and NGOs.
 - Supported platforms: LINE Bot + Web demo (voice as a later-stage extension). Entry for the 2026 Presidential Hackathon International Track.
 
+## AI Skills
+
+- `/new-service-data <服務名稱或官方網址>` — 從官方來源生成一筆 schema 合格的服務規則資料（含參照資料集與防護驗證）。產出一律 `needs_review`，經人工政策審核後才可轉 `active`。定義在 `.claude/skills/new-service-data/SKILL.md`。
+
 ## Git Workflow Rules
 
 ```text
