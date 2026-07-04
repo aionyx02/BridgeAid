@@ -16,6 +16,12 @@ from .evaluator import (
     evaluate_all,
 )
 from .loader import RuleValidationError, load_rule, load_rules, validate_rule
+from .references import (
+    ReferenceValidationError,
+    load_reference,
+    load_references,
+    validate_reference,
+)
 
 __all__ = [
     "POSSIBLE",
@@ -30,4 +36,8 @@ __all__ = [
     "load_rules",
     "validate_rule",
     "RuleValidationError",
+    "load_reference",
+    "load_references",
+    "validate_reference",
+    "ReferenceValidationError",
 ]

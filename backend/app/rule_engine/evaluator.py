@@ -23,12 +23,14 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from .operators import apply_operator
+from .references import load_references
 
 POSSIBLE = "possible"
 INSUFFICIENT_DATA = "insufficient_data"
 UNLIKELY = "unlikely"
 
 Profile = dict[str, Any]
+References = dict[str, dict[str, Any]]
 
 
 @dataclass
@@ -45,11 +47,37 @@ class Evaluation:
     source: dict[str, Any] = field(default_factory=dict)
 
 
+def _ref_thresholds(
+    ref: dict[str, Any], profile: Profile, references: References
+) -> tuple[list[Any] | None, set[str]]:
+    """Candidate threshold(s) for a ``ref`` condition (ADR-0008).
+
+    Rules never hardcode policy-derived numbers; they name a dataset in
+    ``data/reference/`` and the threshold is resolved here. When the selector
+    field (e.g. residence_city) is unknown, every possible threshold is
+    returned so the caller can tell decided-everywhere apart from "depends on
+    the selector" — the latter blocks on the selector field.
+    """
+    dataset = references.get(ref["dataset"])
+    if dataset is None:
+        return None, set()
+    multiplier = ref.get("multiplier", 1)
+    selector = ref.get("by")
+    if not selector:
+        return [dataset["default"] * multiplier], set()
+    key = profile.get(selector)
+    if key is not None:
+        return [dataset["values"].get(key, dataset["default"]) * multiplier], set()
+    candidates = {dataset["default"], *dataset["values"].values()}
+    return sorted(value * multiplier for value in candidates), {selector}
+
+
 def _eval_condition(
     condition: dict[str, Any],
     profile: Profile,
     *,
     hits: list[dict[str, Any]],
+    references: References,
 ) -> tuple[bool | None, set[str]]:
     """Return (state, blocking_fields). A leaf blocks on its own field if unknown."""
     field_name = condition["field"]
@@ -64,6 +92,18 @@ def _eval_condition(
     if field_name not in profile or profile[field_name] is None:
         return None, {field_name}
 
+    if "ref" in condition:
+        thresholds, selector_fields = _ref_thresholds(condition["ref"], profile, references)
+        if thresholds is None:  # dataset missing/unloadable -> cannot decide
+            return None, {field_name}
+        outcomes = {apply_operator(operator, profile[field_name], t) for t in thresholds}
+        if len(outcomes) > 1:  # decision depends on the unknown selector
+            return None, selector_fields
+        result = outcomes.pop()
+        if result:
+            hits.append(condition)
+        return result, set()
+
     result = apply_operator(operator, profile[field_name], condition.get("value"))
     if result:
         hits.append(condition)
@@ -75,6 +115,7 @@ def _eval_node(
     profile: Profile,
     *,
     hits: list[dict[str, Any]],
+    references: References,
 ) -> tuple[bool | None, set[str]]:
     """Tri-state evaluation that reports only the fields that actually block.
 
@@ -84,7 +125,9 @@ def _eval_node(
     """
     if "all" in node or "any" in node:
         mode = "all" if "all" in node else "any"
-        children = [_eval_node(child, profile, hits=hits) for child in node[mode]]
+        children = [
+            _eval_node(child, profile, hits=hits, references=references) for child in node[mode]
+        ]
 
         if mode == "all":
             if any(state is False for state, _ in children):
@@ -102,32 +145,44 @@ def _eval_node(
             return None, blocking
         return False, set()
 
-    return _eval_condition(node, profile, hits=hits)
+    return _eval_condition(node, profile, hits=hits, references=references)
 
 
-def build_document_checklist(rule: dict[str, Any], profile: Profile) -> list[str]:
+def build_document_checklist(
+    rule: dict[str, Any], profile: Profile, references: References | None = None
+) -> list[str]:
     """Documents that apply to this profile.
 
     Includes a document when its condition is ``always``, or when its condition
     evaluates True. A condition whose field is still unknown is included too, so
     the user is not told to skip a document we cannot yet rule out.
     """
+    resolved = load_references() if references is None else references
     checklist: list[str] = []
     for doc in rule.get("required_documents", []):
         condition = doc["condition"]
         if condition == "always":
             checklist.append(doc["name"])
             continue
-        outcome, _ = _eval_condition(condition, profile, hits=[])
+        outcome, _ = _eval_condition(condition, profile, hits=[], references=resolved)
         if outcome is True or outcome is None:
             checklist.append(doc["name"])
     return checklist
 
 
-def evaluate(rule: dict[str, Any], profile: Profile) -> Evaluation:
-    """Evaluate one service rule against a citizen profile."""
+def evaluate(
+    rule: dict[str, Any], profile: Profile, references: References | None = None
+) -> Evaluation:
+    """Evaluate one service rule against a citizen profile.
+
+    ``references`` defaults to the bundled ``data/reference`` datasets; pass
+    ``{}`` to evaluate with no reference data (ref conditions become unknown).
+    """
+    resolved = load_references() if references is None else references
     hits: list[dict[str, Any]] = []
-    outcome, missing = _eval_node(rule["eligibility_rules"], profile, hits=hits)
+    outcome, missing = _eval_node(
+        rule["eligibility_rules"], profile, hits=hits, references=resolved
+    )
 
     if outcome is True:
         status = POSSIBLE
@@ -142,16 +197,19 @@ def evaluate(rule: dict[str, Any], profile: Profile) -> Evaluation:
         status=status,
         hit_conditions=hits,
         missing_fields=sorted(missing),
-        documents=build_document_checklist(rule, profile),
+        documents=build_document_checklist(rule, profile, resolved),
         needs_review=rule.get("status") == "needs_review",
         source=rule.get("source", {}),
     )
 
 
-def evaluate_all(rules: list[dict[str, Any]], profile: Profile) -> list[Evaluation]:
+def evaluate_all(
+    rules: list[dict[str, Any]], profile: Profile, references: References | None = None
+) -> list[Evaluation]:
     """Evaluate every rule, ranking ``possible`` first, then insufficient data."""
     order = {POSSIBLE: 0, INSUFFICIENT_DATA: 1, UNLIKELY: 2}
-    results = [evaluate(rule, profile) for rule in rules]
+    resolved = load_references() if references is None else references
+    results = [evaluate(rule, profile, resolved) for rule in rules]
     return sorted(results, key=lambda e: (order[e.status], e.service_id))
 
 

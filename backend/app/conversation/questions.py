@@ -51,6 +51,11 @@ QUESTIONS: dict[str, Question] = {
         "has_lease", "你目前有租屋（有租約）嗎？", [("有", True), ("沒有", False)]
     ),
     "age": Question("age", "請問你的年齡？（直接輸入數字即可）", []),
+    "monthly_income": Question(
+        "monthly_income",
+        "請問你每月收入大約多少元？（直接輸入數字，如 35000 或 3萬5）",
+        [],
+    ),
     "employment_insured": Question(
         "employment_insured", "你失業前有投保就業保險（勞保）嗎？", [("有", True), ("沒有", False)]
     ),

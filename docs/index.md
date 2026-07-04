@@ -79,6 +79,7 @@ Use this file as the first lookup step. The goal is retrieval-first context, not
 | `docs/adr/0005-opt-in-reminder-system-and-source-trace-endpoints.md` | `adr` | `accepted` | `on_demand` | Opt-in reminder system and source-trace endpoints |
 | `docs/adr/0006-reminder-delivery-via-lightweight-in-process-scheduler.md` | `adr` | `accepted` | `on_demand` | Reminder delivery via lightweight in-process scheduler |
 | `docs/adr/0007-application-process-data-contract-and-line-interactive-layer.md` | `adr` | `proposed` | `on_demand` | Application process data contract and LINE interactive layer |
+| `docs/adr/0008-income-amount-extraction-and-question-strategy.md` | `adr` | `proposed` | `on_demand` | Income amount extraction and question strategy |
 | `docs/architecture.md` | `architecture_spec` | `active` | `retrieve_only` | Architecture |
 | `docs/CLAUDE.md` | `agent_policy` | `active` | `on_demand` | AI Agent Governance And ADR Policy |
 | `docs/conventions.md` | `coding_conventions` | `active` | `retrieve_when_planning` | Coding Conventions |

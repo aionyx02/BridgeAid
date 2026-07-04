@@ -17,6 +17,7 @@ ANSWERS = {
     "income_status": "邊緣戶",
     "has_lease": "有",
     "age": "40",
+    "monthly_income": "35000",
     "employment_insured": "有",
     "involuntary_separation": "是",
     "caregiver": "否",
@@ -75,6 +76,23 @@ def test_sessions_are_isolated():
     manager.handle_message("b", "我住高雄")
     assert store.get("a", "web").profile["residence_city"] == "Taipei"
     assert store.get("b", "web").profile["residence_city"] == "Kaohsiung"
+
+
+def test_salary_only_message_converges_to_rent_subsidy():
+    # Regression (2026-07-04): 「我年薪四十萬」 used to burn the question budget
+    # on city/event and end at "insufficient, call 1957".
+    manager, store = _manager()
+    reply = manager.handle_message("s-income", "我年薪四十萬")
+    assert store.get("s-income", "web").profile["monthly_income"] == 400000 // 12
+
+    rounds = 0
+    while reply.kind == KIND_QUESTION and rounds <= MAX_QUESTIONS:
+        rounds += 1
+        pending = store.get("s-income", "web").pending_field
+        reply = manager.handle_message("s-income", ANSWERS[pending])
+
+    assert reply.kind == KIND_RESULT
+    assert "rent_subsidy_central" in {r["service_id"] for r in reply.results}
 
 
 def test_question_not_repeated():

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
+from app.conversation import MAX_QUESTIONS
 from app.main import app
 
 client = TestClient(app)
@@ -29,7 +30,7 @@ def test_conversation_converges_to_result_over_http():
     turns = 0
     while reply["kind"] == "question":
         turns += 1
-        assert turns <= 3
+        assert turns <= MAX_QUESTIONS
         answer = reply["options"][0] if reply["options"] else "40"
         reply = _post(session, answer)
 

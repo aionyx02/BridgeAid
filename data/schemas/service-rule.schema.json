@@ -69,14 +69,27 @@
       "properties": {
         "field": { "type": "string", "minLength": 1 },
         "operator": { "$ref": "#/$defs/operator" },
-        "value": {}
+        "value": {},
+        "ref": { "$ref": "#/$defs/threshold_ref" }
       },
       "allOf": [
         {
           "if": { "properties": { "operator": { "enum": ["equals", "not_equals", "in", "not_in", "gt", "gte", "lt", "lte"] } } },
-          "then": { "required": ["value"] }
-        }
+          "then": { "oneOf": [ { "required": ["value"] }, { "required": ["ref"] } ] }
+        },
+        { "not": { "required": ["value", "ref"] } }
       ]
+    },
+    "threshold_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dataset"],
+      "description": "Threshold resolved at evaluation time from data/reference/<dataset>.json (sourced, dated). Policy-derived numbers must use this instead of a hardcoded value.",
+      "properties": {
+        "dataset": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "multiplier": { "type": "number", "exclusiveMinimum": 0, "default": 1 },
+        "by": { "type": "string", "minLength": 1, "description": "Profile field selecting the dataset entry (e.g. residence_city); omitted uses the dataset default." }
+      }
     },
     "group": {
       "type": "object",

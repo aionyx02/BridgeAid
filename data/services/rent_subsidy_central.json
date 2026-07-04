@@ -10,7 +10,10 @@
     "all": [
       { "field": "has_lease", "operator": "equals", "value": true },
       { "field": "age", "operator": "gte", "value": 18 },
-      { "field": "income_status", "operator": "in", "value": ["low_income", "mid_low_income", "near_threshold", "general"] }
+      { "any": [
+        { "field": "income_status", "operator": "in", "value": ["low_income", "mid_low_income", "near_threshold", "general"] },
+        { "field": "monthly_income", "operator": "lte", "ref": { "dataset": "minimum_living_cost", "multiplier": 3, "by": "residence_city" } }
+      ] }
     ]
   },
   "required_documents": [

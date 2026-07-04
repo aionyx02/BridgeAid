@@ -57,6 +57,22 @@ owner: project
 - Validation:
   - [x] `uv run pytest`（142 passed，含 8 個 profile-command 測試）。
 
+### TASK.017 - 收入金額判斷 + 提問策略改良
+
+- Status: done
+- Priority: P0
+- Owner: shawn
+- Started: 2026-07-04
+- Related docs:
+  - `docs/adr/0008-income-amount-extraction-and-question-strategy.md`
+- Acceptance criteria:
+  - [x] parser 解析年薪/月薪金額（中文數字含 3萬5 縮寫）→ `monthly_income`；裸金額不猜；LLM 不抽取。
+  - [x] 門檻不硬編碼：`data/reference/minimum_living_cost.json`（縣市值+保守 default+來源+效期）+ 條件 `ref{dataset,multiplier,by}`，評估時依縣市解析。
+  - [x] 防護：硬編碼衍生門檻測試會 fail；參照資料過期 tripwire；reference schema 驗證。
+  - [x] 提問優先完成「已命中條件且最接近判斷」的服務；MAX_QUESTIONS 3→5；新增每月收入追問題。
+- Validation:
+  - [x] `uv run pytest`（155 passed）；「我年薪四十萬」兩題內判可能符合租金補貼。
+
 ## Strategy
 
 Keep `active.md` compact. Every active task must include an `Owner` from `docs/team/members.md`. Use `project` only for placeholder or unassigned setup work; `doing` tasks should be assigned to a real member. Put task-level details in dedicated `docs/tasks/*.md`, detailed implementation notes in per-member session logs, and future ideas in `docs/tasks/backlog.md`. 已完成任務見 `docs/tasks/completed.md`（TASK.001–013 已移出本檔）。

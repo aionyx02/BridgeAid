@@ -18,8 +18,8 @@ owner: project
 
 ## Current Focus
 
-- Active priority: TASK.014–016 完成。申請流程資料契約（`application_process`）、LINE Flex 流程卡 + 提醒 opt-in postback、對話式資料管理（我的資料/修改/清除資料）+ 1957 轉介皆入 code 待 review。
-- Current phase: API 全功能可跑（degraded mode 仍支援）；ADR-0002–0006 accepted，ADR-0007 proposed 待接受。
+- Active priority: TASK.014–017 完成並 commit；`/new-service-data` skill 可供成員以 AI 生成服務資料（產出一律 needs_review）。
+- Current phase: API 全功能可跑（degraded mode 仍支援）；ADR-0002–0006 accepted，ADR-0007/0008 proposed 待接受。
 - Current owner / handoff state: shawn（maintainer）；團隊其他成員尚未登錄。
 
 ## Important Constraints

@@ -12,6 +12,7 @@ ANSWERS = {
     "income_status": "邊緣戶",
     "has_lease": "有",
     "age": "40",
+    "monthly_income": "35000",
     "employment_insured": "有",
     "involuntary_separation": "是",
     "caregiver": "否",

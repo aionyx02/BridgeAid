@@ -61,8 +61,9 @@ owner: project
 - 條件 operator 允許清單（固定，不用 eval）：`equals`、`not_equals`、`in`、`not_in`、`gt`、`gte`、`lt`、`lte`、`exists`。
 - `eligibility_rules` 為遞迴的 `all` / `any` 群組 + leaf condition `{field, operator, value}`。
 - `required_documents[].condition` 為 `"always"` 或一個 condition 物件（不採字串 DSL，避免 eval 風險）。
-- profile 欄位值採固定 token（如 `event_type`：`unemployment` / `illness` / `fire` / `major_accident` / `death_in_family`）；布林欄位含 `involuntary_separation`（失業給付法定要件）。
+- profile 欄位值採固定 token（如 `event_type`：`unemployment` / `illness` / `fire` / `major_accident` / `death_in_family`）；布林欄位含 `involuntary_separation`；數值欄位 `monthly_income`（月收入，元，ADR-0008）。
 - 選填 `application_process[]`：`{name*, description*, url, url_title, deadline, deadline_at}`，官方行政流程步驟，與 source 同審（ADR-0007）。
+- 年度衍生門檻禁止硬編碼：條件用 `ref{dataset, multiplier, by}` 引用 `data/reference/*.json`（附來源與效期，過期測試會擋，ADR-0008）。
 
 ### 規則 JSON 範例
 
@@ -72,16 +73,12 @@ owner: project
   "name": "臺北市急難救助",
   "category": "emergency_aid",
   "jurisdiction": "local",
-  "area": { "type": "city", "value": "Taipei" },
   "status": "active",
   "version": "2026.06",
   "eligibility_rules": {
     "all": [
       { "field": "residence_city", "operator": "equals", "value": "Taipei" },
-      { "any": [
-        { "field": "event_type", "operator": "in", "value": ["unemployment", "illness", "fire"] },
-        { "field": "income_status", "operator": "equals", "value": "low_income" }
-      ]}
+      { "field": "event_type", "operator": "in", "value": ["unemployment", "illness", "fire"] }
     ]
   },
   "required_documents": [ { "name": "身分證明文件", "condition": "always" } ],

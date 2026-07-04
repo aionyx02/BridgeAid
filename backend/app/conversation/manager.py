@@ -14,10 +14,10 @@ from typing import Any, Protocol
 
 from ..recommendation import build_recommendation
 from ..rule_engine import evaluate_all
-from .intent import DeterministicIntentParser, IntentParser
+from .intent import DeterministicIntentParser, IntentParser, parse_income_amount
 from .questions import QUESTIONS, SKIP
 
-MAX_QUESTIONS = 3
+MAX_QUESTIONS = 5
 
 KIND_QUESTION = "question"
 KIND_RESULT = "result"
@@ -30,6 +30,7 @@ FIELD_LABELS: dict[str, str] = {
     "income_status": "家庭收入狀況",
     "has_lease": "是否有租約",
     "age": "年齡",
+    "monthly_income": "每月收入",
     "employment_insured": "就業保險",
     "involuntary_separation": "非自願離職",
     "caregiver": "照顧家人",
@@ -98,6 +99,12 @@ def _apply_answer(session: Session, field_name: str, text: str) -> None:
         digits = "".join(ch for ch in answer if ch.isdigit())
         if digits:
             session.profile["age"] = int(digits)
+    elif field_name == "monthly_income":
+        # The question already fixes the unit to "per month", so a bare amount
+        # (35000 / 3萬5) is unambiguous here, unlike in free conversation.
+        amount = parse_income_amount(answer)
+        if amount is not None and 1_000 <= amount <= 10_000_000:
+            session.profile["monthly_income"] = amount
 
 
 def _value_label(field_name: str, value: Any) -> str:
@@ -224,18 +231,38 @@ class ConversationManager:
 
     @staticmethod
     def _pick_next_field(evaluations: list[Any], asked_fields: list[str]) -> str | None:
-        """Most common blocking field across services that could still qualify."""
+        """Ask for the service closest to a decision, not the globally common field.
+
+        The question budget is small, so completing one nearly-decidable service
+        beats spreading questions across all of them (e.g. a nationwide subsidy
+        must not wait behind city/event questions it does not need). Services the
+        user's own words already engaged (hit_conditions non-empty) come first —
+        volunteering a salary should steer questions toward the subsidy that
+        salary matched, not toward an unrelated service that happens to be one
+        field short. Among the chosen service's blockers, prefer the one most
+        shared with other services; ties break by rule order -> deterministic.
+        """
         counter: Counter[str] = Counter()
+        best_key: tuple[int, int] | None = None
+        best_askable: list[str] = []
         for evaluation in evaluations:
             if evaluation.status != "insufficient_data":
                 continue
-            for missing in evaluation.missing_fields:
-                if missing in QUESTIONS and missing not in asked_fields:
-                    counter[missing] += 1
-        if not counter:
+            askable = [
+                missing
+                for missing in evaluation.missing_fields
+                if missing in QUESTIONS and missing not in asked_fields
+            ]
+            if not askable:
+                continue
+            counter.update(askable)
+            key = (0 if evaluation.hit_conditions else 1, len(askable))
+            if best_key is None or key < best_key:
+                best_key = key
+                best_askable = askable
+        if best_key is None:
             return None
-        # most_common breaks ties by insertion order -> deterministic
-        return counter.most_common(1)[0][0]
+        return max(best_askable, key=lambda field_name: counter[field_name])
 
     def _service_name(self, service_id: str) -> str:
         rule = self._rules_by_id.get(service_id)

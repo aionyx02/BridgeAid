@@ -80,6 +80,21 @@ def test_unemployment_requires_involuntary_separation(rules_by_id):
     assert evaluate(rule, {**profile, "involuntary_separation": False}).status == UNLIKELY
 
 
+def test_rent_subsidy_income_amount_or_status(rules_by_id):
+    rule = rules_by_id["rent_subsidy_central"]
+    base = {"has_lease": True, "age": 40}
+    # 115年最低生活費最低縣市（臺灣省 15,515）× 3 = 46,545 為保守門檻。
+    low = evaluate(rule, {**base, "monthly_income": 400000 // 12})
+    assert low.status == POSSIBLE
+    # 高於保守門檻 → 不判 unlikely（各縣市門檻不同），退回追問 income_status。
+    high = evaluate(rule, {**base, "monthly_income": 80000})
+    assert high.status == INSUFFICIENT_DATA
+    assert "income_status" in high.missing_fields
+    # 身分別已知時，金額不需要。
+    status_only = evaluate(rule, {**base, "income_status": "general"})
+    assert status_only.status == POSSIBLE
+
+
 def test_needs_review_flag(rules_by_id):
     # All bundled services passed policy review; use a copy to test the flag.
     rule = dict(rules_by_id["long_term_care_central"], status="needs_review")

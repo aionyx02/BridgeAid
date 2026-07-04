@@ -21,3 +21,4 @@ owner: project
 | `0005` | accepted | ADR-0005: Opt-in reminder system and source-trace endpoints |
 | `0006` | accepted | ADR-0006: Reminder delivery via lightweight in-process scheduler |
 | `0007` | proposed | ADR-0007: Application process data contract and LINE interactive layer |
+| `0008` | proposed | ADR-0008: Income amount extraction and question strategy |

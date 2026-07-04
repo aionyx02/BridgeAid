@@ -1,0 +1,29 @@
+{
+  "id": "minimum_living_cost",
+  "description": "115 年度（2026）各直轄市、縣（市）每人每月最低生活費（社會救助法第 4 條，衛福部與各直轄市年度公告）。key 為 residence_city 的 canonical token。",
+  "unit": "TWD/person/month",
+  "period": { "valid_from": "2026-01-01", "valid_to": "2026-12-31" },
+  "values": {
+    "Taipei": 20744,
+    "Kaohsiung": 16970
+  },
+  "default": 15515,
+  "default_note": "臺灣省公告值＝全國最低，作為未列縣市與縣市未知時的保守下限。",
+  "sources": [
+    {
+      "title": "衛福部 - 115年臺灣省及福建省低/中低收入戶最低生活費公告",
+      "url": "https://dep.mohw.gov.tw/dosaasw/cp-566-84031-103.html",
+      "last_checked_at": "2026-07-04"
+    },
+    {
+      "title": "臺北市 - 115年度最低生活費及不動產限額（20,744 元）",
+      "url": "https://service.docms.gov.taipei/attachments/115-income-limit.pdf",
+      "last_checked_at": "2026-07-04"
+    },
+    {
+      "title": "高雄市政府公報 - 公告115年度本市低收入戶最低生活費（16,970 元）",
+      "url": "https://gaz.kcg.gov.tw/search/view/5f1d09e4-b244-4f61-84be-7feb2040e6ce",
+      "last_checked_at": "2026-07-04"
+    }
+  ]
+}
