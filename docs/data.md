@@ -62,7 +62,7 @@ owner: project
 - 條件 operator 允許清單（固定，不用 eval）：`equals`、`not_equals`、`in`、`not_in`、`gt`、`gte`、`lt`、`lte`、`exists`。
 - `eligibility_rules` 為遞迴的 `all` / `any` 群組 + leaf condition `{field, operator, value}`。
 - `required_documents[].condition` 為 `"always"` 或一個 condition 物件（不採字串 DSL，避免 eval 風險）。
-- profile 欄位值採固定 token（如 `event_type`：`unemployment` / `illness` / `fire` / `major_accident` / `death_in_family`）。
+- profile 欄位值採固定 token（如 `event_type`：`unemployment` / `illness` / `fire` / `major_accident` / `death_in_family`）；布林欄位含 `involuntary_separation`（失業給付法定要件）。
 
 ### 規則 JSON 範例
 

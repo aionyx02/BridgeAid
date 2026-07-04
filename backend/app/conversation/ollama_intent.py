@@ -46,7 +46,9 @@ _ENUM_FIELDS: dict[str, frozenset[str]] = {
 }
 # Booleans follow the deterministic parser's rule: only ever set True, never
 # guess False, so unknown fields stay unknown and can still be asked.
-_BOOL_FIELDS = frozenset({"has_lease", "caregiver", "care_need", "employment_insured"})
+_BOOL_FIELDS = frozenset(
+    {"has_lease", "caregiver", "care_need", "employment_insured", "involuntary_separation"}
+)
 _AGE_RANGE = range(1, 121)
 
 # Structured-output schema sent to Ollama (`format`), mirroring the whitelist.
@@ -73,6 +75,7 @@ _SYSTEM_PROMPT = """\
 - event_type 只允許 unemployment（失業）、illness（生病/住院）、fire（火災）、\
 major_accident（重大事故）、death_in_family（家人過世）。
 - 不要輸出收入身分；經濟困難與否由系統另外詢問。
+- involuntary_separation = 非自願離職（被資遣/裁員/公司歇業倒閉才算，自己辭職不算）。
 - age 為使用者本人年齡的整數（中文數字也要轉換，如「四十二歲」→ 42）；是別人的年齡就省略。
 - 口語、台語也要理解（「頭路無去/無頭路」= unemployment、「阿嬤走了/過世」= \
 death_in_family、「租厝」= has_lease、「四十二歲」= age 42）。
@@ -88,6 +91,7 @@ _EVIDENCE_MARKERS: dict[str, tuple[str, ...]] = {
     "caregiver": ("照", "顧", "護"),
     "care_need": ("失能", "失智", "臥床", "長照", "照", "顧", "護", "重度"),
     "employment_insured": ("勞保", "就業保險", "保"),
+    "involuntary_separation": ("裁", "資遣", "歇業", "倒閉", "關廠", "非自願", "趕出"),
 }
 
 

@@ -1,11 +1,12 @@
 [
   {
     "id": "taipei_unemployed_renter_near_threshold",
-    "message": "我住臺北，今年40歲，最近失業，有保勞保，房租快繳不出來，有租約，是邊緣戶",
+    "message": "我住臺北，今年40歲，最近被公司資遣失業，有保勞保，房租快繳不出來，有租約，是邊緣戶",
     "expected_profile": {
       "residence_city": "Taipei",
       "age": 40,
       "event_type": "unemployment",
+      "involuntary_separation": true,
       "employment_insured": true,
       "has_lease": true,
       "income_status": "near_threshold"
@@ -16,7 +17,7 @@
       "social_housing_taipei",
       "unemployment_assistance_central"
     ],
-    "expected_needs_review": ["unemployment_assistance_central"],
+    "expected_needs_review": [],
     "expected_conflicts": [["rent_subsidy_central", "social_housing_taipei"]]
   },
   {
@@ -53,11 +54,12 @@
   },
   {
     "id": "kaohsiung_unemployment_insured_renter",
-    "message": "我住高雄，今年35歲，失業前有保勞保，租屋有租約，收入一般",
+    "message": "我住高雄，今年35歲，被裁員失業，之前有保勞保，租屋有租約，收入一般",
     "expected_profile": {
       "residence_city": "Kaohsiung",
       "age": 35,
       "event_type": "unemployment",
+      "involuntary_separation": true,
       "employment_insured": true,
       "has_lease": true,
       "income_status": "general"
@@ -66,7 +68,7 @@
       "rent_subsidy_central",
       "unemployment_assistance_central"
     ],
-    "expected_needs_review": ["unemployment_assistance_central"],
+    "expected_needs_review": [],
     "expected_conflicts": []
   },
   {

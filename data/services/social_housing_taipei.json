@@ -4,8 +4,8 @@
   "category": "housing",
   "jurisdiction": "local",
   "area": { "type": "city", "value": "Taipei" },
-  "status": "needs_review",
-  "version": "2026.06",
+  "status": "active",
+  "version": "2026.07",
   "eligibility_rules": {
     "all": [
       { "field": "residence_city", "operator": "equals", "value": "Taipei" },
@@ -14,7 +14,8 @@
   },
   "required_documents": [
     { "name": "身分證明文件", "condition": "always" },
-    { "name": "戶籍或居住證明", "condition": "always" }
+    { "name": "戶籍證明，或在本市就學/就業證明", "condition": "always" },
+    { "name": "所得與財產證明（家庭年所得低於本市 50 分位點、家庭成員無北北基桃自有住宅，由受理機關查核）", "condition": "always" }
   ],
   "conflicts": [
     { "service_id": "rent_subsidy_central", "type": "choose_one", "reason": "同一租屋需求，承租社會住宅與租金補貼通常擇一。" }
@@ -22,6 +23,6 @@
   "source": {
     "title": "臺北市政府 - 承租社會住宅資格",
     "url": "https://www.gov.taipei/News_Content.aspx?n=EEC70A4186D4C828&s=ECE04E630293064E&sms=87415A8B9CE81B16",
-    "last_checked_at": "2026-06-26"
+    "last_checked_at": "2026-07-02"
   }
 }

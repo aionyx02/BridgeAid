@@ -34,7 +34,7 @@ owner: project
 
 - LINE 實連已完成真機驗證（2026-07-02：真實帳號發訊息收到 bot 回覆）；tunnel 重開後用 `uv run python -m app.line.set_webhook https://<tunnel-host>` 重設。
 - Ollama 已實測定案：`qwen2.5:1.5b`（優於 qwen3:4b 非思考模式，無幻覺、0.8–3s）；`think:false` + 證據閘門已入 code。
-- `rent_subsidy_central`、`social_housing_taipei`、`long_term_care_central`、`unemployment_assistance_central` 仍標 `needs_review`：需人工政策審核後再升高信心（demo 評審信心點）。
+- 政策審核完成（2026-07-02）：6 筆服務全 active；失業給付新增 `involuntary_separation` 法定要件。後續建議季度複查來源。
 
 ## Last Validation Snapshot
 

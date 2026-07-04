@@ -78,9 +78,13 @@ def test_service_source_trace():
     assert body["needs_review"] is False
 
 
-def test_service_source_flags_needs_review():
+def test_service_source_reflects_policy_review():
+    # 2026-07-02 policy audit: all bundled services verified against official
+    # sources, so none is flagged; the trace fields must still be present.
     body = client.get("/services/unemployment_assistance_central/source").json()
-    assert body["needs_review"] is True
+    assert body["needs_review"] is False
+    assert body["version"] == "2026.07"
+    assert body["source"]["last_checked_at"] == "2026-07-02"
 
 
 def test_unknown_service_source_404():

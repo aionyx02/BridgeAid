@@ -26,3 +26,4 @@ owner: project
 | `TASK.010` | OllamaIntentParser（ADR-0004）：本地 LLM 欄位抽取 + 白名單清洗 + deterministic fallback，預設關閉 | `docs/memory/sessions/2026-07-02-shawn.md` |
 | `TASK.011` | 提醒到期送達（ADR-0006 proposed）：lifespan asyncio 排程 + LINE push/模擬送達，失敗重試 | `docs/memory/sessions/2026-07-02-shawn.md` |
 | `TASK.012` | Docker Postgres 落地（compose + initdb schema + importer 實跑）與 Demo UI 打磨 | `docs/memory/sessions/2026-07-02-shawn.md` |
+| `TASK.013` | 4 筆 needs_review 服務政策審核：修正後全數升 active（含失業給付補非自願離職要件） | `docs/memory/sessions/2026-07-02-shawn.md` |

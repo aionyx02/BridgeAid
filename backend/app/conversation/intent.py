@@ -43,6 +43,9 @@ _LEASE_KEYWORDS = ("租屋", "房租", "租金", "租約", "房東", "承租", "
 _CAREGIVER_KEYWORDS = ("照顧", "照護", "顧老", "顧病")
 _CARE_NEED_KEYWORDS = ("失能", "臥床", "失智", "重度", "長照需求")
 _INSURED_KEYWORDS = ("勞保", "就業保險", "有保勞保")
+# Statutory requirement for unemployment benefits: separation must be
+# involuntary (勞保 failure of employer, layoff, etc.), never a resignation.
+_INVOLUNTARY_KEYWORDS = ("被裁", "資遣", "歇業", "倒閉", "關廠", "非自願離職")
 
 _AGE_PATTERNS = [re.compile(r"(\d{1,3})\s*歲"), re.compile(r"今年\s*(\d{1,3})")]
 
@@ -80,6 +83,8 @@ class DeterministicIntentParser:
             profile["care_need"] = True
         if any(keyword in text for keyword in _INSURED_KEYWORDS):
             profile["employment_insured"] = True
+        if any(keyword in text for keyword in _INVOLUNTARY_KEYWORDS):
+            profile["involuntary_separation"] = True
 
         for pattern in _AGE_PATTERNS:
             match = pattern.search(text)

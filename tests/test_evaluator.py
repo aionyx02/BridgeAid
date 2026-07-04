@@ -71,9 +71,19 @@ def test_documents_depend_on_event_type(rules_by_id):
     assert "事故證明" not in illness.documents
 
 
-def test_needs_review_flag(rules_by_id):
+def test_unemployment_requires_involuntary_separation(rules_by_id):
     rule = rules_by_id["unemployment_assistance_central"]
-    result = evaluate(rule, {"event_type": "unemployment", "employment_insured": True})
+    profile = {"event_type": "unemployment", "employment_insured": True}
+    # 就保法第 11 條：非自願離職是法定要件，未知時只能追問，不可標 possible。
+    assert evaluate(rule, profile).status == INSUFFICIENT_DATA
+    assert evaluate(rule, {**profile, "involuntary_separation": True}).status == POSSIBLE
+    assert evaluate(rule, {**profile, "involuntary_separation": False}).status == UNLIKELY
+
+
+def test_needs_review_flag(rules_by_id):
+    # All bundled services passed policy review; use a copy to test the flag.
+    rule = dict(rules_by_id["long_term_care_central"], status="needs_review")
+    result = evaluate(rule, {"care_need": True})
     assert result.status == POSSIBLE
     assert result.needs_review is True
 

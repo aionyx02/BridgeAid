@@ -18,6 +18,7 @@ ANSWERS = {
     "has_lease": "有",
     "age": "40",
     "employment_insured": "有",
+    "involuntary_separation": "是",
     "caregiver": "否",
     "care_need": "否",
 }

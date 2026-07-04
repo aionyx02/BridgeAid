@@ -4,25 +4,26 @@
   "category": "housing",
   "jurisdiction": "central",
   "area": { "type": "nationwide" },
-  "status": "needs_review",
-  "version": "2026.06",
+  "status": "active",
+  "version": "2026.07",
   "eligibility_rules": {
     "all": [
       { "field": "has_lease", "operator": "equals", "value": true },
+      { "field": "age", "operator": "gte", "value": 18 },
       { "field": "income_status", "operator": "in", "value": ["low_income", "mid_low_income", "near_threshold", "general"] }
     ]
   },
   "required_documents": [
     { "name": "身分證明文件", "condition": "always" },
     { "name": "租賃契約", "condition": "always" },
-    { "name": "收入證明", "condition": "always" }
+    { "name": "收入證明（每人每月平均所得須低於當地最低生活費 3 倍；家庭成員均無自有住宅，由受理機關查調）", "condition": "always" }
   ],
   "conflicts": [
     { "service_id": "social_housing_taipei", "type": "choose_one", "reason": "同一租屋需求，租金補貼與承租社會住宅通常擇一。" }
   ],
   "source": {
-    "title": "內政部國土管理署 - 115年300億元中央擴大租金補貼受理申請公告",
-    "url": "https://www.nlma.gov.tw/ch/legislation/law%26regunu/7243",
-    "last_checked_at": "2026-06-26"
+    "title": "行政院 - 300億元中央擴大租金補貼專案計畫（延長至115年）",
+    "url": "https://www.ey.gov.tw/Page/5A8A0CB5B41DA11E/442e67f9-e22e-42c6-9df2-4d3fa9d10666",
+    "last_checked_at": "2026-07-02"
   }
 }

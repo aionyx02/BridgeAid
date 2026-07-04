@@ -54,6 +54,11 @@ QUESTIONS: dict[str, Question] = {
     "employment_insured": Question(
         "employment_insured", "你失業前有投保就業保險（勞保）嗎？", [("有", True), ("沒有", False)]
     ),
+    "involuntary_separation": Question(
+        "involuntary_separation",
+        "離開上一份工作是非自願的嗎？（被資遣、裁員、公司歇業）",
+        [("是", True), ("否", False)],
+    ),
     "caregiver": Question(
         "caregiver", "你目前是否在照顧家人？", [("是", True), ("否", False)]
     ),

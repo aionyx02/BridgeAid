@@ -68,13 +68,30 @@ owner: project
 - Notes:
   - 對話衝突提示改顯示服務中文名稱（原 raw id）。
 
+### TASK.013 - 4 筆 needs_review 服務政策審核
+
+- Status: done
+- Priority: P0
+- Owner: shawn
+- Started: 2026-07-02
+- Related docs:
+  - `docs/data.md`
+- Acceptance criteria:
+  - [x] 4 筆服務逐筆對照官方來源（行政院/北市府/1966/勞動部）核實資格要件。
+  - [x] 修正：租金補貼加 18 歲門檻與失效來源 URL；長照 2.0 → 3.0；失業給付補「非自願離職」法定要件（新 profile 欄位 + 追問 + 關鍵字 + LLM 白名單）。
+  - [x] 全數升為 active（version 2026.07、last_checked_at 2026-07-02）。
+- Validation:
+  - [x] `uv run pytest`（121 passed）
+  - [x] live API：自願離職 unlikely、未知追問、17 歲租屋 unlikely。
+- Notes:
+  - 未建模的查核項（無自有住宅、所得分位點、就保年資）寫入文件清單說明，由承辦查調。
+
 ## Strategy
 
 Keep `active.md` compact. Every active task must include an `Owner` from `docs/team/members.md`. Use `project` only for placeholder or unassigned setup work; `doing` tasks should be assigned to a real member. Put task-level details in dedicated `docs/tasks/*.md`, detailed implementation notes in per-member session logs, and future ideas in `docs/tasks/backlog.md`. 已完成任務見 `docs/tasks/completed.md`（TASK.001–009 已移出本檔）。
 
 ## Next Phase Candidates
 
-- LINE 實連驗證：tunnel（ngrok/cloudflared）+ webhook URL 設定 + 真機 reply/push（憑證機制已就緒）。
-- Ollama 本機實測與模型選型（qwen3 小尺寸起）。
-- 4 筆 `needs_review` 服務的人工政策審核（maintainer）。
+- Demo 演練：12 組情境走一遍 LINE + Web，順講稿節奏。
 - session/提醒改 DB 持久化（schema 已就緒）。
+- 服務規則季度性複查（來源 last_checked_at 超過 90 天標 needs_review）。

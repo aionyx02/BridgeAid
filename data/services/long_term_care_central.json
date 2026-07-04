@@ -1,11 +1,11 @@
 {
   "id": "long_term_care_central",
-  "name": "長期照顧服務（長照 2.0）",
+  "name": "長期照顧服務（長照 3.0）",
   "category": "long_term_care",
   "jurisdiction": "central",
   "area": { "type": "nationwide" },
-  "status": "needs_review",
-  "version": "2026.06",
+  "status": "active",
+  "version": "2026.07",
   "eligibility_rules": {
     "all": [
       { "field": "care_need", "operator": "equals", "value": true }
@@ -17,8 +17,8 @@
   ],
   "conflicts": [],
   "source": {
-    "title": "衛福部長照專區（1966）- 申請長照服務",
+    "title": "衛福部長照專區（1966）- 申請長照服務（長照 3.0 自 115 年起實施）",
     "url": "https://1966.gov.tw/LTC/cp-6533-70777-207.html",
-    "last_checked_at": "2026-06-26"
+    "last_checked_at": "2026-07-02"
   }
 }

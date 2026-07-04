@@ -4,22 +4,23 @@
   "category": "unemployment",
   "jurisdiction": "central",
   "area": { "type": "nationwide" },
-  "status": "needs_review",
-  "version": "2026.06",
+  "status": "active",
+  "version": "2026.07",
   "eligibility_rules": {
     "all": [
       { "field": "event_type", "operator": "equals", "value": "unemployment" },
+      { "field": "involuntary_separation", "operator": "equals", "value": true },
       { "field": "employment_insured", "operator": "equals", "value": true }
     ]
   },
   "required_documents": [
     { "name": "身分證明文件", "condition": "always" },
-    { "name": "離職證明", "condition": "always" }
+    { "name": "非自願離職證明文件（離職前 3 年內就保年資合計滿 1 年，由公立就服機構確認）", "condition": "always" }
   ],
   "conflicts": [],
   "source": {
     "title": "勞動部勞動力發展署 - 失業給付",
     "url": "https://emps.wda.gov.tw/Internet/Index/labor-benefits.aspx",
-    "last_checked_at": "2026-06-26"
+    "last_checked_at": "2026-07-02"
   }
 }
