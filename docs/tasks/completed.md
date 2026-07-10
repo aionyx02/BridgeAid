@@ -31,3 +31,4 @@ owner: project
 | `TASK.015` | LINE Flex 流程卡（官方入口/來源/提醒按鈕）+ postback opt-in 提醒流 + Web demo 流程渲染 | `docs/memory/sessions/2026-07-04-shawn.md` |
 | `TASK.016` | 我的資料/修改/清除資料 對話指令（kind=info）+ 1957 福利諮詢專線轉介（空結果與邊緣戶） | `docs/memory/sessions/2026-07-04-shawn.md` |
 | `TASK.017` | monthly_income 金額解析 + 租補保守門檻 any 條件 + hit-first 提問策略（MAX_QUESTIONS 5） | `docs/memory/sessions/2026-07-04-shawn.md` |
+| `TASK.018` | 相同結果去重（改指引訊息）+ 服務清單指令 | `docs/memory/sessions/2026-07-04-shawn.md` |

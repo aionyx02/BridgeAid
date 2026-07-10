@@ -73,6 +73,18 @@ owner: project
 - Validation:
   - [x] `uv run pytest`（155 passed）；「我年薪四十萬」兩題內判可能符合租金補貼。
 
+### TASK.018 - 結果去重 + 服務清單指令
+
+- Status: done
+- Priority: P1
+- Owner: shawn
+- Started: 2026-07-04
+- Acceptance criteria:
+  - [x] 推薦結果與上次相同時不再重複長文，改回「如何調整」指引（補充情況/修改/清除/服務清單 選項）；新資訊改變結果時恢復顯示。
+  - [x] `服務清單` 指令：列出全部服務（中文分類、needs_review 標示）+ 使用引導。
+- Validation:
+  - [x] `uv run pytest`（157 passed）。
+
 ## Strategy
 
 Keep `active.md` compact. Every active task must include an `Owner` from `docs/team/members.md`. Use `project` only for placeholder or unassigned setup work; `doing` tasks should be assigned to a real member. Put task-level details in dedicated `docs/tasks/*.md`, detailed implementation notes in per-member session logs, and future ideas in `docs/tasks/backlog.md`. 已完成任務見 `docs/tasks/completed.md`（TASK.001–013 已移出本檔）。

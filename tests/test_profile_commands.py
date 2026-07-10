@@ -84,6 +84,40 @@ def test_clear_command_wipes_profile():
     assert "沒有登錄任何資料" in followup.text
 
 
+def test_service_list_command():
+    manager, _ = _manager()
+    reply = manager.handle_message("svc", "服務清單")
+    assert reply.kind == KIND_INFO
+    assert "中央租金補貼" in reply.text
+    assert "臺北市急難救助" in reply.text
+    assert "急難救助" in reply.text  # category label
+    assert reply.text.count("・") == 6  # all bundled services listed
+
+
+def _drive_to_result(manager, store, session_id, first_message):
+    reply = manager.handle_message(session_id, first_message)
+    while reply.kind == KIND_QUESTION:
+        pending = store.get(session_id, "web").pending_field
+        reply = manager.handle_message(session_id, ANSWERS[pending])
+    return reply
+
+
+def test_unchanged_result_is_not_repeated():
+    manager, store = _manager()
+    result = _drive_to_result(manager, store, "rep", "我住臺北，40歲，被資遣失業，有勞保，有租約")
+    assert result.kind == KIND_RESULT
+
+    again = manager.handle_message("rep", "然後呢")
+    assert again.kind == KIND_INFO
+    assert "相同" in again.text
+    assert "服務清單" in again.options
+
+    # New information changes the outcome -> a fresh result is shown again.
+    updated = manager.handle_message("rep", "我還要照顧失智又臥床的爸爸")
+    assert updated.kind == KIND_RESULT
+    assert "long_term_care_central" in {r["service_id"] for r in updated.results}
+
+
 def test_near_threshold_result_refers_to_1957():
     manager, store = _manager()
     reply = manager.handle_message("p1", "我住臺北，40歲，被資遣失業，有勞保，有租約，是邊緣戶")

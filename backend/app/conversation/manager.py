@@ -38,7 +38,16 @@ FIELD_LABELS: dict[str, str] = {
 }
 _PROFILE_COMMANDS = ("我的資料", "查看資料", "查看我的資料")
 _CLEAR_COMMANDS = ("清除資料", "清除我的資料", "刪除資料")
+_SERVICE_COMMANDS = ("服務清單", "服務列表", "有哪些服務", "查看服務")
 _EDIT_PREFIX = "修改"
+
+CATEGORY_LABELS = {
+    "emergency_aid": "急難救助",
+    "housing": "住宅",
+    "long_term_care": "長期照顧",
+    "unemployment": "就業/失業",
+    "other": "其他",
+}
 
 # Edge-case referral: the national welfare consultation hotline is the human
 # fallback whenever the rule engine cannot conclude or the case is borderline.
@@ -52,6 +61,7 @@ class Session:
     profile: dict[str, Any] = field(default_factory=dict)
     asked_fields: list[str] = field(default_factory=list)
     pending_field: str | None = None
+    last_result_text: str | None = None  # dedupe: don't repeat an unchanged result
 
 
 @dataclass
@@ -147,6 +157,22 @@ class ConversationManager:
         session.profile.update(self._parser.extract(text))
 
         reply = self._next_reply(session)
+        if reply.kind == KIND_RESULT:
+            if reply.text == session.last_result_text:
+                # Nothing changed since the last recommendation — repeating the
+                # same wall of text reads as the bot being stuck. Point to the
+                # ways forward instead.
+                reply = Reply(
+                    kind=KIND_INFO,
+                    text=(
+                        "推薦結果和上次相同。想調整可以：直接補充新的情況"
+                        "（例如「我住高雄」「月薪3萬5」）、輸入「修改年齡」等指令，"
+                        "或「清除資料」重新開始。輸入「服務清單」可看所有服務。"
+                    ),
+                    options=["我的資料", "服務清單", "清除資料"],
+                )
+            else:
+                session.last_result_text = reply.text
         self._store.save(session)
         return reply
 
@@ -157,10 +183,13 @@ class ConversationManager:
             session.profile.clear()
             session.asked_fields.clear()
             session.pending_field = None
+            session.last_result_text = None
             return Reply(
                 kind=KIND_INFO,
                 text="已清除這個對話登錄的所有資料。想重新諮詢時，直接描述你的情況即可。",
             )
+        if command in _SERVICE_COMMANDS:
+            return self._services_reply()
         if command in _PROFILE_COMMANDS:
             session.pending_field = None
             return self._profile_reply(session)
@@ -168,6 +197,24 @@ class ConversationManager:
             session.pending_field = None
             return self._edit_reply(session, command[len(_EDIT_PREFIX) :].strip())
         return None
+
+    def _services_reply(self) -> Reply:
+        """Catalog of every bundled service, grouped as a readable list."""
+        lines = []
+        for rule in self._rules:
+            category = CATEGORY_LABELS.get(rule.get("category", "other"), "其他")
+            suffix = "（資料待人工確認）" if rule.get("status") == "needs_review" else ""
+            lines.append(f"・{rule['name']}｜{category}{suffix}")
+        return Reply(
+            kind=KIND_INFO,
+            text=(
+                "目前可協助評估的服務：\n"
+                + "\n".join(lines)
+                + "\n直接描述你的情況（例如「我被資遣了，房租繳不出來」），"
+                "我會判斷你可能符合哪些。"
+            ),
+            options=["我的資料", "清除資料"],
+        )
 
     def _profile_reply(self, session: Session) -> Reply:
         if not session.profile:
