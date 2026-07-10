@@ -25,7 +25,15 @@
     "docs:guard-secrets": "node scripts/docs-guard-secrets.mjs",
     "docs:guard-placeholders": "node scripts/docs-guard-placeholders.mjs",
     "docs:guard-adr-status": "node scripts/docs-guard-adr-status.mjs",
-    "docs:guard-task-status": "node scripts/docs-guard-task-status.mjs"
+    "docs:guard-task-status": "node scripts/docs-guard-task-status.mjs",
+    "cf:dev": "wrangler dev",
+    "cf:deploy": "wrangler deploy",
+    "cf:tail": "wrangler tail"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@cloudflare/containers": "^0.3.7",
+    "@cloudflare/workers-types": "^5.20260710.1",
+    "typescript": "^5.9.0",
+    "wrangler": "^4.110.0"
+  }
 }

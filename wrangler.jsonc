@@ -1,0 +1,20 @@
+{
+  // Cloudflare Worker + Container config for BridgeAid (hackathon demo).
+  // Deploy: npx wrangler deploy   (containers take a few minutes to provision)
+  "name": "bridgeaid",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-07-01",
+  "containers": [
+    {
+      "class_name": "BridgeAidContainer",
+      "image": "./Dockerfile",
+      // Single instance for the demo: simplest cost and shared in-memory state.
+      "max_instances": 1
+    }
+  ],
+  "durable_objects": {
+    "bindings": [{ "name": "BRIDGEAID", "class_name": "BridgeAidContainer" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["BridgeAidContainer"] }],
+  "observability": { "enabled": true }
+}
