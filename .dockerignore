@@ -1,0 +1,31 @@
+# Keep the container image small and the build context clean.
+.git/
+.github/
+.githooks/
+.idea/
+.vscode/
+.venv/
+node_modules/
+.pytest_cache/
+.ruff_cache/
+.context/
+
+# Not needed at runtime.
+docs/
+tests/
+test/
+scripts/
+db/
+docker-compose.yml
+*.md
+
+# Local Cloudflare/wrangler state.
+.wrangler/
+
+# Deploy secrets/config (never belong in the image).
+.line.env
+scripts/deploy.env
+
+# Python caches.
+**/__pycache__/
+**/*.pyc

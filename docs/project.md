@@ -40,7 +40,7 @@ BridgeAid（主動式公共服務導航系統 / Proactive Public Service Navigat
 - AI 層：LLM API（意圖辨識、欄位抽取、白話/多語轉寫）。
 - 任務排程：Redis + Celery/RQ（提醒、來源檢查）。
 - 檢索層：pgvector / Qdrant（第二階段，非 MVP）。
-- 部署：Docker Compose（黑客松）→ Render/Fly.io/GCP（決選）。
+- 部署：Cloudflare Containers（黑客松，Worker 前置 + uvicorn 容器）／Docker Compose 本地 → Render/Fly.io/GCP（決選備案）。
 
 ## Platform Targets
 
