@@ -63,12 +63,13 @@ class HttpxLineReplyClient:
     def reply_messages(
         self, access_token: str, reply_token: str, messages: list[dict[str, Any]]
     ) -> None:
-        httpx.post(
+        response = httpx.post(
             REPLY_URL,
             headers={"Authorization": f"Bearer {access_token}"},
             json={"replyToken": reply_token, "messages": messages[:5]},  # LINE reply cap
             timeout=10.0,
         )
+        response.raise_for_status()
 
 
 def build_reply_client() -> LineReplyClient:

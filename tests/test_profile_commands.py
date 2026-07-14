@@ -118,6 +118,31 @@ def test_unchanged_result_is_not_repeated():
     assert "long_term_care_central" in {r["service_id"] for r in updated.results}
 
 
+def test_result_followup_answers_document_question():
+    manager, store = _manager()
+    result = _drive_to_result(manager, store, "docs", "我住臺北，生病住院，是低收入戶")
+    assert result.kind == KIND_RESULT
+
+    reply = manager.handle_message("docs", "需要準備什麼文件")
+    assert reply.kind == KIND_INFO
+    assert "目前建議先準備" in reply.text
+    assert "診斷證明" in reply.text
+    assert reply.document_checklist
+
+
+def test_result_followup_answers_application_process_question():
+    manager, store = _manager()
+    result = _drive_to_result(manager, store, "process", "我年薪四十萬")
+    assert result.kind == KIND_RESULT
+    assert "rent_subsidy_central" in {r["service_id"] for r in result.results}
+
+    reply = manager.handle_message("process", "我要怎麼申請")
+    assert reply.kind == KIND_INFO
+    assert "申請流程" in reply.text
+    assert "中央租金補貼" in reply.text
+    assert reply.results
+
+
 def test_near_threshold_result_refers_to_1957():
     manager, store = _manager()
     reply = manager.handle_message("p1", "我住臺北，40歲，被資遣失業，有勞保，有租約，是邊緣戶")

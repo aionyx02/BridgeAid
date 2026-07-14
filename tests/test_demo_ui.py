@@ -19,11 +19,14 @@ def test_demo_index_served():
 def test_demo_assets_served():
     css = client.get("/demo/styles.css")
     js = client.get("/demo/app.js")
+    core = client.get("/demo/core.js")
     mark = client.get("/demo/bridgeaid-mark.svg")
 
     assert css.status_code == 200
     assert "text/css" in css.headers["content-type"]
     assert js.status_code == 200
     assert "javascript" in js.headers["content-type"]
+    assert core.status_code == 200
+    assert "javascript" in core.headers["content-type"]
     assert mark.status_code == 200
     assert "image/svg+xml" in mark.headers["content-type"]

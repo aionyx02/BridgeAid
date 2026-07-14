@@ -7,7 +7,7 @@ from datetime import datetime
 
 from fastapi.testclient import TestClient
 
-import app.main as main
+from app import config, runtime
 from app.config import Settings
 from app.line.postback import parse_postback, reminder_time
 from app.line.webhook import expected_signature
@@ -84,8 +84,8 @@ def _postback_event(data: str, user_id: str) -> dict:
 
 def test_webhook_postback_remind_then_ok_creates_reminder(monkeypatch):
     recorder = RecordingReplyClient()
-    monkeypatch.setattr(main, "reply_client", recorder)
-    monkeypatch.setattr(main.config, "load_settings", lambda: SETTINGS)
+    monkeypatch.setattr(runtime, "reply_client", recorder)
+    monkeypatch.setattr(config, "load_settings", lambda: SETTINGS)
 
     _post_event(_postback_event("action=remind&service=rent_subsidy_central", "U-pb-1"))
     consent = recorder.sent[0][0]
@@ -102,8 +102,8 @@ def test_webhook_postback_remind_then_ok_creates_reminder(monkeypatch):
 
 def test_webhook_postback_decline_creates_nothing(monkeypatch):
     recorder = RecordingReplyClient()
-    monkeypatch.setattr(main, "reply_client", recorder)
-    monkeypatch.setattr(main.config, "load_settings", lambda: SETTINGS)
+    monkeypatch.setattr(runtime, "reply_client", recorder)
+    monkeypatch.setattr(config, "load_settings", lambda: SETTINGS)
 
     _post_event(_postback_event("action=remind_no", "U-pb-2"))
     assert "先不建立" in recorder.sent[0][0]["text"]
@@ -112,8 +112,8 @@ def test_webhook_postback_decline_creates_nothing(monkeypatch):
 
 def test_webhook_postback_unknown_service_is_ignored(monkeypatch):
     recorder = RecordingReplyClient()
-    monkeypatch.setattr(main, "reply_client", recorder)
-    monkeypatch.setattr(main.config, "load_settings", lambda: SETTINGS)
+    monkeypatch.setattr(runtime, "reply_client", recorder)
+    monkeypatch.setattr(config, "load_settings", lambda: SETTINGS)
 
     _post_event(_postback_event("action=remind&service=nope", "U-pb-3"))
     assert recorder.sent == []

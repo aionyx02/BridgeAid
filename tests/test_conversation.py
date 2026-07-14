@@ -104,3 +104,47 @@ def test_question_not_repeated():
         asked_seen.append(pending)
         reply = manager.handle_message("s1", ANSWERS[pending])
     assert len(asked_seen) == len(set(asked_seen))  # no field asked twice
+
+
+def test_unclear_pending_answer_reasks_once_without_burning_state():
+    manager, store = _manager()
+    first = manager.handle_message("retry", "你好")
+    assert first.kind == KIND_QUESTION
+    pending = store.get("retry", "web").pending_field
+    asked = list(store.get("retry", "web").asked_fields)
+
+    retry = manager.handle_message("retry", "蛤")
+    session = store.get("retry", "web")
+    assert retry.kind == KIND_QUESTION
+    assert session.pending_field == pending
+    assert session.asked_fields == asked
+    assert "無法判斷" in retry.text
+
+
+def test_pending_answer_can_be_fuzzy_parsed():
+    manager, store = _manager()
+    reply = manager.handle_message("fuzzy", "我失業了")
+    assert reply.kind == KIND_QUESTION
+    assert store.get("fuzzy", "web").pending_field == "residence_city"
+
+    manager.handle_message("fuzzy", "台北")
+    session = store.get("fuzzy", "web")
+    assert session.profile["residence_city"] == "Taipei"
+    assert session.pending_field != "residence_city"
+
+
+def test_pending_age_accepts_chinese_numerals():
+    manager, store = _manager()
+    manager.handle_message("age-zh", "修改年齡")
+    reply = manager.handle_message("age-zh", "四十二歲")
+    session = store.get("age-zh", "web")
+    assert session.profile["age"] == 42
+    assert reply.kind in {KIND_QUESTION, KIND_RESULT}
+
+
+def test_pending_boolean_accepts_common_no_synonym():
+    manager, store = _manager()
+    manager.handle_message("bool-no", "修改是否有租約")
+    manager.handle_message("bool-no", "無")
+    session = store.get("bool-no", "web")
+    assert session.profile["has_lease"] is False

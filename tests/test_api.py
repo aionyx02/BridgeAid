@@ -7,7 +7,7 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 
-from app import config, main
+from app import config, runtime
 from app.line.webhook import expected_signature
 from app.main import app
 
@@ -86,6 +86,22 @@ def test_webhook_accepts_valid_signature(monkeypatch):
     assert response.json() == {"status": "ok"}
 
 
+def test_webhook_rejects_malformed_json(monkeypatch):
+    monkeypatch.setattr(config, "load_settings", lambda: _settings(SECRET))
+    body = b"{bad json"
+    headers = {"X-Line-Signature": expected_signature(SECRET, body)}
+    response = client.post("/line/webhook", content=body, headers=headers)
+    assert response.status_code == 400
+
+
+def test_webhook_rejects_non_object_json(monkeypatch):
+    monkeypatch.setattr(config, "load_settings", lambda: _settings(SECRET))
+    body = b"[]"
+    headers = {"X-Line-Signature": expected_signature(SECRET, body)}
+    response = client.post("/line/webhook", content=body, headers=headers)
+    assert response.status_code == 400
+
+
 def test_webhook_rejects_invalid_signature(monkeypatch):
     monkeypatch.setattr(config, "load_settings", lambda: _settings(SECRET))
     response = client.post(
@@ -103,7 +119,7 @@ def test_webhook_runs_conversation_and_replies(monkeypatch):
         def reply(self, access_token, reply_token, reply):
             captured.append((access_token, reply_token, reply))
 
-    monkeypatch.setattr(main, "reply_client", FakeReplyClient())
+    monkeypatch.setattr(runtime, "reply_client", FakeReplyClient())
 
     body = json.dumps(
         {

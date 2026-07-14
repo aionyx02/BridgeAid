@@ -113,6 +113,31 @@ def test_non_json_content_falls_back_to_deterministic():
     assert parser.extract("我失業了")["event_type"] == "unemployment"
 
 
+def test_failure_cooldown_skips_ollama_after_timeout():
+    calls = 0
+    now = 0.0
+
+    def clock() -> float:
+        return now
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        raise httpx.ReadTimeout("slow")
+
+    parser = OllamaIntentParser(
+        client=httpx.Client(transport=httpx.MockTransport(handler)),
+        cooldown_seconds=60.0,
+        clock=clock,
+    )
+
+    assert parser.extract("台北租屋") == {"residence_city": "Taipei", "has_lease": True}
+    assert calls == 1
+
+    assert parser.extract("我失業了") == {"event_type": "unemployment"}
+    assert calls == 1
+
+
 def _settings(**overrides) -> Settings:
     values = dict(
         line_channel_id=None,

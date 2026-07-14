@@ -15,6 +15,8 @@ from __future__ import annotations
 
 import json
 import logging
+from collections.abc import Callable
+from time import monotonic
 from typing import Any
 
 import httpx
@@ -31,6 +33,7 @@ DEFAULT_HOST = "http://localhost:11434"
 DEFAULT_MODEL = "qwen2.5:1.5b"
 # Local single-turn extraction; fail fast so the fallback keeps the chat snappy.
 TIMEOUT = httpx.Timeout(10.0, connect=2.0)
+FAILURE_COOLDOWN_SECONDS = 60.0
 
 # Canonical profile tokens (docs/data.md). Anything outside these is dropped.
 # income_status is deliberately NOT extractable by the LLM: it is a
@@ -135,17 +138,25 @@ class OllamaIntentParser:
         model: str | None = None,
         fallback: IntentParser | None = None,
         client: httpx.Client | None = None,
+        cooldown_seconds: float = FAILURE_COOLDOWN_SECONDS,
+        clock: Callable[[], float] | None = None,
     ) -> None:
         self._host = (host or DEFAULT_HOST).rstrip("/")
         self._model = model or DEFAULT_MODEL
         self._fallback = fallback or DeterministicIntentParser()
         self._client = client or httpx.Client(timeout=TIMEOUT)
+        self._cooldown_seconds = cooldown_seconds
+        self._clock = clock or monotonic
+        self._disabled_until = 0.0
 
     def extract(self, text: str) -> dict[str, Any]:
         deterministic = self._fallback.extract(text)
+        if self._clock() < self._disabled_until:
+            return deterministic
         try:
             llm_profile = self._extract_llm(text)
         except (httpx.HTTPError, json.JSONDecodeError, KeyError, TypeError) as exc:
+            self._disabled_until = self._clock() + self._cooldown_seconds
             logger.warning("ollama intent extraction failed, using fallback: %s", exc)
             return deterministic
         # Deterministic hits win: keyword matches are high precision, and the
